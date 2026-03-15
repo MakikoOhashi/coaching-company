@@ -111,5 +111,9 @@ To avoid unnecessary complexity during the hackathon:
   prompt, role, and handoff definitions
 - `shared/`
   company-wide rules and data contracts
+- `state/`
+  mutable operating state for learners
+- `experience/`
+  accumulated internal know-how
 - `docs/`
   project-level design decisions

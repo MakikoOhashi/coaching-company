@@ -42,6 +42,10 @@ The repository stores the design and implementation source of this system, but i
 - [Vision](docs/vision.md)
 - [Product Direction](docs/product-direction.md)
 - [Architecture](docs/architecture.md)
+- [Data Boundary](docs/data-boundary.md)
+- [Minimal DB Design](docs/minimal-db-design.md)
+- [Kanrigyomu Mapping](docs/kanrigyomu-mapping.md)
+- [State Update Model](docs/state-update-model.md)
 - [Workflow](docs/workflow.md)
 - [MVP](docs/mvp.md)
 - [Open Questions](docs/open-questions.md)
@@ -52,5 +56,29 @@ The repository stores the design and implementation source of this system, but i
   persona-specific definitions
 - `shared/`
   company-wide policies and contracts
+- `state/`
+  mutable operating state
+- `experience/`
+  accumulated organizational learning
 - `docs/`
   project decisions and design documents
+
+## Initial Operating Files
+
+Current mutable state templates:
+
+- `state/student-profile.md`
+- `state/current-roadmap.md`
+- `state/today-plan.md`
+- `state/current-milestone.md`
+- `state/pass-probability.md`
+- `state/risk-status.md`
+- `state/session-log.md`
+- `state/ceo-decisions.md`
+
+Current experience templates:
+
+- `experience/coach-playbook.md`
+- `experience/ceo-decisions-log.md`
+- `experience/effective-interventions.md`
+- `experience/risk-patterns.md`

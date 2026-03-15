@@ -47,6 +47,10 @@ The product's role is to handle:
 - coaching direction
 - milestone management
 
+The company should also accumulate operational knowledge over time.
+
+The system should not only remember the learner's current state. It should also build internal knowledge about what kinds of interventions and strategies actually work.
+
 ## Human Role
 
 Human intervention should be minimized and concentrated at the top level.
