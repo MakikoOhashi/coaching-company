@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coaching Company</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page-shell">
+      <section class="hero">
+        <p class="eyebrow">AI-run coaching company</p>
+        <h1>One learner. One AI company. One clear next step.</h1>
+        <p class="hero-copy">
+          The company starts working the moment the learner arrives. It decides what matters now, how risky the current
+          path is, and what should happen next.
+        </p>
+      </section>
+
+      <section class="coach-panel">
+        <div class="coach-panel__header">
+          <div>
+            <p class="panel-label">Coach briefing</p>
+            <h2>Current learner state</h2>
+          </div>
+          <button id="refreshButton" class="refresh-button" type="button">Refresh state</button>
+        </div>
+
+        <div id="statusMessage" class="status-message" role="status" aria-live="polite">
+          Loading the learner state from `common-ai-api`...
+        </div>
+
+        <div id="stateView" class="state-view" hidden>
+          <article class="coach-script">
+            <p class="coach-script__label">Coach says</p>
+            <div id="coachScript" class="coach-script__body"></div>
+          </article>
+
+          <div class="state-grid">
+            <article class="state-card">
+              <p class="state-card__label">Current subject</p>
+              <h3 id="currentSubject">-</h3>
+            </article>
+            <article class="state-card">
+              <p class="state-card__label">Current milestone</p>
+              <h3 id="currentMilestone">-</h3>
+            </article>
+            <article class="state-card">
+              <p class="state-card__label">Risk level</p>
+              <h3 id="riskLevel">-</h3>
+            </article>
+            <article class="state-card">
+              <p class="state-card__label">Pass probability</p>
+              <h3 id="passProbability">-</h3>
+            </article>
+          </div>
+
+          <article class="next-action">
+            <p class="next-action__label">Next action today</p>
+            <p id="nextActionToday" class="next-action__body">-</p>
+          </article>
+
+          <section class="signals">
+            <div class="signals__header">
+              <p class="panel-label">Signals</p>
+              <h3>Why the coach is saying this</h3>
+            </div>
+            <dl class="signal-list">
+              <div class="signal-list__item">
+                <dt>Block progress</dt>
+                <dd id="blockProgress">-</dd>
+              </div>
+              <div class="signal-list__item">
+                <dt>Block accuracy</dt>
+                <dd id="blockAccuracyRate">-</dd>
+              </div>
+              <div class="signal-list__item">
+                <dt>Total answered</dt>
+                <dd id="totalAnswered">-</dd>
+              </div>
+              <div class="signal-list__item">
+                <dt>Streak count</dt>
+                <dd id="streakCount">-</dd>
+              </div>
+              <div class="signal-list__item">
+                <dt>Daily target</dt>
+                <dd id="dailyTargetCorrect">-</dd>
+              </div>
+              <div class="signal-list__item">
+                <dt>Remaining today</dt>
+                <dd id="todayRemainingToTarget">-</dd>
+              </div>
+              <div class="signal-list__item">
+                <dt>Basic remaining</dt>
+                <dd id="basicRemainingQuestions">-</dd>
+              </div>
+              <div class="signal-list__item">
+                <dt>Estimated days to clear basic</dt>
+                <dd id="basicEtaDays">-</dd>
+              </div>
+            </dl>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

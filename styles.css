@@ -1,0 +1,231 @@
+:root {
+  --bg: #f4efe4;
+  --paper: #fffdf7;
+  --ink: #1f1d1a;
+  --muted: #6c6458;
+  --line: #d9cfbf;
+  --accent: #2b6f57;
+  --accent-soft: #dcecdf;
+  --warning: #a44c2a;
+  --shadow: 0 18px 40px rgba(56, 46, 34, 0.12);
+  --radius-lg: 28px;
+  --radius-md: 18px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top, rgba(255, 255, 255, 0.8), transparent 35%),
+    linear-gradient(180deg, #e7e0d1 0%, var(--bg) 58%, #efe7d8 100%);
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.page-shell {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 48px 0 64px;
+}
+
+.hero {
+  padding: 12px 8px 32px;
+}
+
+.eyebrow,
+.panel-label,
+.coach-script__label,
+.state-card__label,
+.next-action__label {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  margin: 0;
+  max-width: 11ch;
+  font-size: clamp(2.8rem, 7vw, 5.2rem);
+  line-height: 0.94;
+  font-weight: 700;
+}
+
+.hero-copy {
+  max-width: 58ch;
+  margin: 18px 0 0;
+  color: var(--muted);
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.coach-panel {
+  padding: 28px;
+  background: rgba(255, 253, 247, 0.88);
+  border: 1px solid rgba(217, 207, 191, 0.9);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(6px);
+}
+
+.coach-panel__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: end;
+}
+
+.coach-panel__header h2,
+.signals__header h3 {
+  margin: 0;
+  font-size: clamp(1.6rem, 3vw, 2.3rem);
+}
+
+.refresh-button {
+  border: none;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #f7f8f4;
+  font: inherit;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-weight: 700;
+  padding: 12px 18px;
+  cursor: pointer;
+}
+
+.refresh-button:hover {
+  filter: brightness(1.05);
+}
+
+.status-message {
+  margin-top: 20px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: #f7f1e4;
+  color: var(--muted);
+  font-family: "Helvetica Neue", Arial, sans-serif;
+}
+
+.status-message[data-state="error"] {
+  background: #f8e8e1;
+  color: var(--warning);
+}
+
+.state-view {
+  margin-top: 24px;
+  display: grid;
+  gap: 22px;
+}
+
+.coach-script,
+.next-action,
+.signals,
+.state-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+}
+
+.coach-script {
+  padding: 22px;
+}
+
+.coach-script__body {
+  font-size: 1.2rem;
+  line-height: 1.75;
+}
+
+.state-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.state-card {
+  padding: 18px;
+  min-height: 152px;
+}
+
+.state-card h3 {
+  margin: 0;
+  font-size: 1.45rem;
+  line-height: 1.25;
+}
+
+.next-action {
+  padding: 22px;
+  background: var(--accent-soft);
+}
+
+.next-action__body {
+  margin: 0;
+  font-size: 1.16rem;
+  line-height: 1.7;
+}
+
+.signals {
+  padding: 22px;
+}
+
+.signal-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin: 20px 0 0;
+}
+
+.signal-list__item {
+  padding: 14px;
+  border-radius: 14px;
+  background: #f7f2e8;
+}
+
+.signal-list__item dt {
+  color: var(--muted);
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.signal-list__item dd {
+  margin: 10px 0 0;
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 960px) {
+  .state-grid,
+  .signal-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .page-shell {
+    width: min(100% - 20px, 100%);
+    padding-top: 24px;
+  }
+
+  .coach-panel {
+    padding: 20px;
+  }
+
+  .coach-panel__header {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .state-grid,
+  .signal-list {
+    grid-template-columns: 1fr;
+  }
+}

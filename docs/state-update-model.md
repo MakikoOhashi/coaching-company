@@ -58,6 +58,16 @@ Examples of mutable state files to introduce later:
 
 These define the current operating condition for one learner.
 
+For the MVP, the most important student state should be reduced to a minimal set:
+
+- current subject
+- current milestone
+- risk level
+- pass probability
+- next action for today
+
+This is enough for the coach to understand the learner's present condition and decide what to say next.
+
 ### Experience Files
 
 These capture what the organization has learned over time.

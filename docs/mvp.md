@@ -12,6 +12,17 @@ The MVP should prove that the system can:
 - estimate pass likelihood
 - escalate important cases upward
 
+## Minimum Demo Behaviors
+
+The demo must show these four capabilities:
+
+1. Generate what the learner should do today.
+2. Accept and interpret a learner progress report.
+3. Show current pass probability.
+4. Escalate to the AI CEO when the case requires higher judgment.
+
+These are the non-negotiable core behaviors of the first version.
+
 ## What To Keep
 
 - one model
@@ -43,6 +54,23 @@ The first implementation should prioritize the following order:
 2. The system tells the student what to do today.
 3. The system updates the plan when the student reports progress.
 4. Voice or avatar can be added only if there is time.
+
+## Interaction Principle
+
+These capabilities should not be exposed only as rigid buttons or menu actions.
+
+The system should interpret natural learner messages and decide which coaching action to run.
+
+Examples:
+
+- "What should I do today?"
+- "I could not study yesterday."
+- "Tell me my current status."
+- "What is my pass probability right now?"
+
+The Coach layer should infer the intent and route the request internally.
+
+This means the visible experience can stay conversational and teacher-like, while the internal system still runs a small set of well-defined actions.
 
 ## Delivery Strategy
 
@@ -76,6 +104,10 @@ The system should own:
 - strategy updates
 - coaching structure
 - milestone tracking
+
+The system should also avoid pushing unnecessary decision-making back to the learner.
+
+The learner can speak naturally, but the product should decide how to respond operationally.
 
 ## Engineering Constraint
 

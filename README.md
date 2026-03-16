@@ -1,6 +1,12 @@
 # Coaching Company
 
-AI-run certification coaching company that automatically manages daily study plans, progress tracking, and escalation through an AI CEO structure.
+An AI-run coaching company where every employee is AI.
+
+すべての社員がAIで構成されたコーチングカンパニー。
+
+A fully AI-operated coaching company that starts working the moment a learner arrives and takes over planning, study management, practice design, progress tracking, and next actions so the learner can focus only on doing the work.
+
+学習者が来た瞬間からAIの会社が運営を開始し、プランニング、学習管理、問題設計、進捗把握、次の行動指示までを引き受けることで、学習者は与えられたことを実行することに集中できるサービス。
 
 ## What This Project Is
 
@@ -23,6 +29,17 @@ The system should reduce thinking overhead by deciding:
 - how to recover after missed study days
 - how likely the student is to pass
 - when the study strategy should change
+
+## MVP Core Behaviors
+
+The first demo must be able to:
+
+- tell the learner what to do today
+- accept and interpret a learner progress report
+- show current pass probability
+- escalate to the AI CEO when necessary
+
+These actions should be triggered through natural learner messages, not only fixed buttons.
 
 ## System Shape
 

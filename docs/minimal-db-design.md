@@ -93,6 +93,30 @@ Suggested fields:
 
 This table represents the live state that the coach sees.
 
+### MVP reduction for `student_state`
+
+For the first version, keep `student_state` minimal.
+
+The recommended minimum fields are:
+
+- `student_id`
+- `current_subject`
+- `current_milestone`
+- `risk_level`
+- `pass_probability`
+- `next_action_today`
+- `updated_at`
+
+These fields answer the most important questions:
+
+- What area is the learner focusing on now?
+- Where is the learner in the roadmap?
+- How risky is the current situation?
+- How likely is the learner to pass right now?
+- What should the learner do today?
+
+Everything else can be added after the first end-to-end flow works.
+
 ### 4. `roadmaps`
 
 Stores the current learning roadmap and its revisions.
