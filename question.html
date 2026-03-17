@@ -18,8 +18,10 @@
     </main>
 
     <script type="module">
-      import { buildQuestionTopic, getStore, loadQuestion, mergeStore, submitAnswer } from "./session.js";
+      import { buildQuestionTopic, getStore, loadQuestion, mergeStore, mountLanguageToggle, submitAnswer, t } from "./session.js";
 
+      mountLanguageToggle();
+      document.documentElement.lang = new URLSearchParams(window.location.search).get("lang") || "ja";
       mergeStore({ stage: "question" });
       const store = getStore();
       let question = store.currentQuestion;
@@ -46,6 +48,7 @@
         choiceList.appendChild(button);
       });
 
+      document.getElementById("answerButton").textContent = t("answer");
       document.getElementById("answerButton").addEventListener("click", async () => {
         if (!selectedChoice) return;
         const payload = await submitAnswer(question.id, selectedChoice);

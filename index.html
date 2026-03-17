@@ -10,10 +10,19 @@
     <main class="page-shell page-shell--slide">
       <section class="hero hero--slide">
         <p class="eyebrow">AI-run coaching company</p>
-        <h1>合格まで、今日やることはもう決まっています。</h1>
-        <p class="hero-copy">AIコーチングカンパニーが、今日の学習内容と進み方を運営します。</p>
-        <a class="refresh-button hero-button slide-link" href="./start.html">始める</a>
+        <h1 id="topTitle">合格まで、今日やることはもう決まっています。</h1>
+        <p id="topCopy" class="hero-copy">AIコーチングカンパニーが、今日の学習内容と進み方を運営します。</p>
+        <a id="startLink" class="refresh-button hero-button slide-link" href="./start.html">始める</a>
       </section>
     </main>
+    <script type="module">
+      import { mountLanguageToggle, t, withLang } from "./session.js";
+      mountLanguageToggle();
+      document.documentElement.lang = new URLSearchParams(window.location.search).get("lang") || "ja";
+      document.getElementById("topTitle").textContent = t("topTitle");
+      document.getElementById("topCopy").textContent = t("topCopy");
+      document.getElementById("startLink").textContent = t("startButton");
+      document.getElementById("startLink").href = withLang("./start.html");
+    </script>
   </body>
 </html>

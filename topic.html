@@ -11,13 +11,15 @@
       <article class="slide-card">
         <p class="session-card__label">2. Topic</p>
         <h2 id="topicMessage" class="slide-title">読み込み中です...</h2>
-        <a class="session-button slide-link" href="./question.html">次へ</a>
+        <a id="topicNextLink" class="session-button slide-link" href="./question.html">次へ</a>
       </article>
     </main>
 
     <script type="module">
-      import { buildTopicMessage, getStore, loadQuestion, mergeStore } from "./session.js";
+      import { buildTopicMessage, getStore, loadQuestion, mergeStore, mountLanguageToggle, t, withLang } from "./session.js";
 
+      mountLanguageToggle();
+      document.documentElement.lang = new URLSearchParams(window.location.search).get("lang") || "ja";
       mergeStore({ stage: "topic" });
       const store = getStore();
       let question = store.currentQuestion;
@@ -26,6 +28,8 @@
       }
 
       document.getElementById("topicMessage").textContent = buildTopicMessage(question);
+      document.getElementById("topicNextLink").textContent = t("next");
+      document.getElementById("topicNextLink").href = withLang("./question.html");
     </script>
   </body>
 </html>

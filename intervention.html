@@ -10,9 +10,9 @@
     <main class="page-shell page-shell--slide">
       <article class="slide-card">
         <p class="session-card__label">5. 解説と介入</p>
-        <h2 class="slide-title">解説を確認して、短く整理します</h2>
+        <h2 id="interventionTitle" class="slide-title">解説を確認して、短く整理します</h2>
         <div id="questionRecall" class="question-recall" hidden>
-          <p class="question-recall__label">今の問題</p>
+          <p id="questionRecallLabel" class="question-recall__label">今の問題</p>
           <p id="questionRecallStem" class="question-recall__stem"></p>
           <p id="questionRecallChoice" class="question-recall__choice"></p>
         </div>
@@ -38,7 +38,10 @@
         buildSummaryText,
         getStore,
         mergeStore,
+        mountLanguageToggle,
         requestReflection,
+        t,
+        withLang,
       } from "./session.js";
 
       const store = getStore();
@@ -50,6 +53,8 @@
         window.location.href = "./question.html";
       }
 
+      mountLanguageToggle();
+      document.documentElement.lang = new URLSearchParams(window.location.search).get("lang") || "ja";
       mergeStore({ stage: "coach" });
 
       const reflectionThread = document.getElementById("reflectionThread");
@@ -64,6 +69,12 @@
       const questionRecall = document.getElementById("questionRecall");
       const questionRecallStem = document.getElementById("questionRecallStem");
       const questionRecallChoice = document.getElementById("questionRecallChoice");
+      document.getElementById("interventionTitle").textContent = t("interventionTitle");
+      document.getElementById("questionRecallLabel").textContent = t("currentQuestion");
+      reflectionSubmit.textContent = t("submit");
+      continueReflectionButton.textContent = t("continueChat");
+      nextLink.textContent = t("proceedNext");
+      nextLink.href = withLang("./summary.html");
 
       resultFeedback.dataset.result = result.isCorrect ? "correct" : "incorrect";
       resultFeedback.textContent = result.isCorrect
@@ -81,9 +92,9 @@
       let currentMode = result.isCorrect ? "correct_check" : "mistake_review";
 
       reflectionThread.innerHTML = `<div class="reflection-bubble" data-role="coach">${initialPrompt}</div>`;
-      reflectionLabel.textContent = result.isCorrect ? "短く説明してみてください" : "どこがずれていたかを一言で整理してください";
+      reflectionLabel.textContent = result.isCorrect ? t("explainBriefly") : t("mistakePrompt");
       reflectionInput.placeholder = result.isCorrect
-        ? "例: 先取特権は一定の債権を確保するために優先して回収できる権利"
+        ? "例: ◎◎とは、△△のために認められる権利"
         : "例: ◎◎まで対象になると勘違いした / ◎◎が特則だと思っていた";
 
       continueReflectionButton.addEventListener("click", () => {

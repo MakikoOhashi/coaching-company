@@ -10,12 +10,17 @@
     <main class="page-shell page-shell--slide">
       <article class="slide-card">
         <p class="session-card__label">1. Session intro</p>
-        <h2 class="slide-title">昨日つまずいた論点を、まず1問だけ確認しましょう。</h2>
-        <a class="session-button slide-link" href="./topic.html">次へ</a>
+        <h2 id="introTitle" class="slide-title">昨日つまずいた論点を、まず1問だけ確認しましょう。</h2>
+        <a id="introNextLink" class="session-button slide-link" href="./topic.html">次へ</a>
       </article>
     </main>
     <script type="module">
-      import { mergeStore } from "./session.js";
+      import { mergeStore, mountLanguageToggle, t, withLang } from "./session.js";
+      mountLanguageToggle();
+      document.documentElement.lang = new URLSearchParams(window.location.search).get("lang") || "ja";
+      document.getElementById("introTitle").textContent = t("introTitle");
+      document.getElementById("introNextLink").textContent = t("next");
+      document.getElementById("introNextLink").href = withLang("./topic.html");
       mergeStore({ stage: "intro" });
     </script>
   </body>

@@ -9,35 +9,36 @@
   <body>
     <main class="page-shell page-shell--slide">
       <section class="slide-card">
-        <p class="coach-script__label">担当コーチ</p>
+        <p id="coachLabel" class="coach-script__label">担当コーチ</p>
         <p id="coachScript" class="coach-script__body">読み込み中です...</p>
 
         <div class="stage-actions">
           <button id="toggleOverviewButton" class="session-button session-button--ghost" type="button">いまの状況を見る</button>
-          <a class="session-button slide-link" href="./intro.html">はい</a>
+          <a id="startYesLink" class="session-button slide-link" href="./intro.html">はい</a>
         </div>
 
         <section id="overviewPanel" class="overview-panel" hidden>
           <div class="state-grid">
             <article class="state-card">
               <p class="state-card__label">今日のテーマ</p>
+              <p id="currentSubjectLabel" class="state-card__label">今日のテーマ</p>
               <h3 id="currentSubject">-</h3>
             </article>
             <article class="state-card">
-              <p class="state-card__label">いまの到達地点</p>
+              <p id="currentMilestoneLabel" class="state-card__label">いまの到達地点</p>
               <h3 id="currentMilestone">-</h3>
             </article>
             <article class="state-card">
-              <p class="state-card__label">現在のリスク</p>
+              <p id="riskLevelLabel" class="state-card__label">現在のリスク</p>
               <h3 id="riskLevel">-</h3>
             </article>
             <article class="state-card">
-              <p class="state-card__label">合格可能性</p>
+              <p id="passProbabilityLabel" class="state-card__label">合格可能性</p>
               <h3 id="passProbability">-</h3>
             </article>
           </div>
           <article class="next-action">
-            <p class="next-action__label">今日やること</p>
+            <p id="nextActionLabel" class="next-action__label">今日やること</p>
             <p id="nextActionToday" class="next-action__body">-</p>
           </article>
         </section>
@@ -45,18 +46,33 @@
     </main>
 
     <script type="module">
-      import { buildCoachScript, getStore, loadStudentState, mergeStore } from "./session.js";
+      import { buildCoachScript, getStore, loadStudentState, mergeStore, mountLanguageToggle, t, withLang } from "./session.js";
 
       const coachScript = document.getElementById("coachScript");
       const overviewPanel = document.getElementById("overviewPanel");
       const toggleOverviewButton = document.getElementById("toggleOverviewButton");
+      const startYesLink = document.getElementById("startYesLink");
+      const setToggleText = () => {
+        toggleOverviewButton.textContent = overviewPanel.hidden ? t("viewState") : t("hideState");
+      };
+
+      mountLanguageToggle();
+      document.documentElement.lang = new URLSearchParams(window.location.search).get("lang") || "ja";
+      document.getElementById("coachLabel").textContent = t("coachLabel");
+      document.getElementById("currentSubjectLabel").textContent = t("currentTheme");
+      document.getElementById("currentMilestoneLabel").textContent = t("currentMilestoneLabel");
+      document.getElementById("riskLevelLabel").textContent = t("currentRisk");
+      document.getElementById("passProbabilityLabel").textContent = t("passChance");
+      document.getElementById("nextActionLabel").textContent = t("nextAction");
+      startYesLink.textContent = t("yes");
+      startYesLink.href = withLang("./intro.html");
 
       overviewPanel.hidden = true;
-      toggleOverviewButton.textContent = "いまの状況を見る";
+      setToggleText();
 
       toggleOverviewButton.addEventListener("click", () => {
         overviewPanel.hidden = !overviewPanel.hidden;
-        toggleOverviewButton.textContent = overviewPanel.hidden ? "いまの状況を見る" : "いまの状況を閉じる";
+        setToggleText();
       });
 
       const payload = (await loadStudentState()) || getStore();

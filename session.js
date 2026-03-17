@@ -1,9 +1,11 @@
 const params = new URLSearchParams(window.location.search);
+const SUPPORTED_LANGS = new Set(["ja", "en"]);
 
 export const COMMON_API_BASE_URL = params.get("apiBase") || "https://common-ai-api.makiron19831014.workers.dev";
 export const APP_ID = params.get("appId") || "coaching-company-web";
 export const GUEST_ID = params.get("guestId") || "coach-dashboard";
 export const COMPANY_STUDENT_KEY = params.get("studentKey") || "husband-company";
+export const LANG = resolveLang();
 
 const STUDENT_STATE_PATH = "/coaching/student-state";
 const CURRENT_QUESTION_PATH = "/coaching/company-question";
@@ -11,6 +13,80 @@ const SUBMIT_ANSWER_PATH = "/coaching/company-submit-answer";
 const REFLECTION_REPLY_PATH = "/coaching/company-reflection-coach";
 
 const STORAGE_KEY = "coaching-company-session";
+
+const COPY = {
+  ja: {
+    topTitle: "合格まで、今日やることはもう決まっています。",
+    topCopy: "AIコーチングカンパニーが、今日の学習内容と進み方を運営します。",
+    startButton: "始める",
+    coachLabel: "担当コーチ",
+    viewState: "いまの状況を見る",
+    hideState: "いまの状況を閉じる",
+    yes: "はい",
+    currentTheme: "今日のテーマ",
+    currentMilestoneLabel: "いまの到達地点",
+    currentRisk: "現在のリスク",
+    passChance: "合格可能性",
+    nextAction: "今日やること",
+    introTitle: "昨日つまずいた論点を、まず1問だけ確認しましょう。",
+    next: "次へ",
+    topicFallback: "今日の論点に入ります。",
+    answer: "回答する",
+    interventionTitle: "解説を確認して、短く整理します",
+    currentQuestion: "今の問題",
+    explainBriefly: "短く説明してみてください",
+    mistakePrompt: "どこがずれていたかを一言で整理してください",
+    submit: "送信",
+    continueChat: "もう少し続ける",
+    proceedNext: "次へ進む",
+    closeSession: "Close the session",
+    autoAdvance: (seconds) => `${seconds}秒後に次の問題へ進みます。`,
+    skipAhead: "すぐ進む",
+    loading: "読み込み中です...",
+  },
+  en: {
+    topTitle: "Your plan to pass is already set for today.",
+    topCopy: "The AI coaching company manages what to study today and how to move through it.",
+    startButton: "Start",
+    coachLabel: "Your coach",
+    viewState: "See current status",
+    hideState: "Hide current status",
+    yes: "Yes",
+    currentTheme: "Today's topic",
+    currentMilestoneLabel: "Current milestone",
+    currentRisk: "Current risk",
+    passChance: "Pass probability",
+    nextAction: "Today's action",
+    introTitle: "Let's quickly revisit the point that felt shaky last time.",
+    next: "Next",
+    topicFallback: "Let's move into today's topic.",
+    answer: "Submit answer",
+    interventionTitle: "Review the explanation and summarize it briefly.",
+    currentQuestion: "Current question",
+    explainBriefly: "Explain it briefly",
+    mistakePrompt: "Put the misunderstanding into one short sentence",
+    submit: "Send",
+    continueChat: "Ask one more thing",
+    proceedNext: "Go to next",
+    closeSession: "Close the session",
+    autoAdvance: (seconds) => `Moving to the next question in ${seconds} seconds.`,
+    skipAhead: "Move now",
+    loading: "Loading...",
+  },
+};
+
+function resolveLang() {
+  const fromQuery = params.get("lang");
+  if (fromQuery && SUPPORTED_LANGS.has(fromQuery)) {
+    window.sessionStorage.setItem("coaching-company-lang", fromQuery);
+    return fromQuery;
+  }
+  const fromSession = window.sessionStorage.getItem("coaching-company-lang");
+  if (fromSession && SUPPORTED_LANGS.has(fromSession)) {
+    return fromSession;
+  }
+  return "ja";
+}
 
 function readStore() {
   try {
@@ -34,6 +110,39 @@ export function clearStore() {
 
 export function getStore() {
   return readStore();
+}
+
+export function t(key, ...args) {
+  const entry = COPY[LANG][key];
+  return typeof entry === "function" ? entry(...args) : entry;
+}
+
+export function withLang(path) {
+  return withLangFor(path, LANG);
+}
+
+export function withLangFor(path, lang) {
+  const url = new URL(path, window.location.href);
+  url.searchParams.set("lang", lang);
+  if (params.get("appId")) url.searchParams.set("appId", params.get("appId"));
+  if (params.get("apiBase")) url.searchParams.set("apiBase", params.get("apiBase"));
+  if (params.get("guestId")) url.searchParams.set("guestId", params.get("guestId"));
+  if (params.get("studentKey")) url.searchParams.set("studentKey", params.get("studentKey"));
+  return `${url.pathname}${url.search}`;
+}
+
+export function mountLanguageToggle() {
+  const existing = document.getElementById("langToggle");
+  if (existing) return;
+
+  const wrapper = document.createElement("div");
+  wrapper.id = "langToggle";
+  wrapper.className = "lang-toggle";
+  wrapper.innerHTML = `
+    <a class="lang-toggle__link ${LANG === "ja" ? "is-active" : ""}" href="${withLangFor(window.location.pathname, "ja")}">JP</a>
+    <a class="lang-toggle__link ${LANG === "en" ? "is-active" : ""}" href="${withLangFor(window.location.pathname, "en")}">EN</a>
+  `;
+  document.body.appendChild(wrapper);
 }
 
 async function postJson(path, body) {
@@ -96,23 +205,29 @@ export async function requestReflection({ questionText, explanationText, learner
 }
 
 export function buildCoachScript(studentState) {
+  if (LANG === "en") {
+    return `Good morning. Let's continue from yesterday. We'll start with ${studentState.currentSubject} today. Right now you are at ${studentState.currentMilestone}. First, let's work on this: ${studentState.nextActionToday}`;
+  }
   return `おはようございます。昨日の続きから始めましょう。今日は${studentState.currentSubject}から入ります。いまは ${studentState.currentMilestone} の段階です。まずは ${studentState.nextActionToday}`;
 }
 
 export function buildSessionIntro(studentState, signals) {
+  if (LANG === "en") {
+    return `Based on the last session, we'll prioritize ${studentState.currentSubject} today. You are currently at ${studentState.currentMilestone}, so let's begin by aiming for ${signals.dailyTargetCorrect} correct answers today.`;
+  }
   return `前回の流れを踏まえると、今日は${studentState.currentSubject}を優先します。いまは ${studentState.currentMilestone} の段階なので、まずは今日の目標である ${signals.dailyTargetCorrect} 問正解を取りにいきましょう。`;
 }
 
 export function buildTopicMessage(question) {
   if (!question?.subject && !question?.subtopic) {
-    return "今日の論点に入ります。";
+    return t("topicFallback");
   }
 
   if (question.subject && question.subtopic) {
-    return `${question.subject}、${question.subtopic}です。`;
+    return LANG === "en" ? `Today's focus is ${question.subject}: ${question.subtopic}.` : `${question.subject}、${question.subtopic}です。`;
   }
 
-  return `${question.subject || question.subtopic}です。`;
+  return LANG === "en" ? `Today's focus is ${question.subject || question.subtopic}.` : `${question.subject || question.subtopic}です。`;
 }
 
 export function buildQuestionTopic(question) {
@@ -124,9 +239,11 @@ export function buildQuestionTopic(question) {
 
 export function buildReasonPrompt(selectedChoice) {
   if (selectedChoice) {
-    return `${selectedChoice}を選んだんですね。理由を一言で言えますか？`;
+    return LANG === "en"
+      ? `You chose ${selectedChoice}. Can you give your reason in one short sentence?`
+      : `${selectedChoice}を選んだんですね。理由を一言で言えますか？`;
   }
-  return "この答えにした理由を、一言で言えますか？";
+  return LANG === "en" ? "Can you say why you chose that answer in one short sentence?" : "この答えにした理由を、一言で言えますか？";
 }
 
 export function buildInterventionLead(result) {
@@ -138,15 +255,22 @@ export function buildInterventionLead(result) {
 
 export function buildInitialReflectionPrompt(result) {
   if (result.isCorrect) {
-    return "この論点は取れています。次へ進む前に、「先取特権」が何を意味するかを短く言えるかだけ確認しておきましょう。";
+    return LANG === "en"
+      ? 'You have this point. Before moving on, let’s just check whether you can briefly say what "statutory lien" means.'
+      : "この論点は取れています。次へ進む前に、「先取特権」が何を意味するかを短く言えるかだけ確認しておきましょう。";
   }
-  return "今回の誤りは、論点を広く取りすぎたか、特則を落とした可能性があります。まず「どこが言い過ぎだったか」を一言で整理してみてください。";
+  return LANG === "en"
+    ? "This mistake may have come from reading the scope too broadly or missing the special rule. First, put into one short sentence what felt overstated."
+    : "今回の誤りは、論点を広く取りすぎたか、特則を落とした可能性があります。まず「どこが言い過ぎだったか」を一言で整理してみてください。";
 }
 
 export function buildSummaryText(studentState, extraText = "") {
-  const closing = `現在の合格確率は${studentState.passProbability}%です。次も${studentState.currentSubject}を続けて確認しましょう。`;
+  const closing =
+    LANG === "en"
+      ? `Your current pass probability is ${studentState.passProbability}%. Next, we'll continue with ${studentState.currentSubject}.`
+      : `現在の合格確率は${studentState.passProbability}%です。次も${studentState.currentSubject}を続けて確認しましょう。`;
   if (!extraText) {
-    return `ここでは今回のポイントを押さえられれば十分です。${closing}`;
+    return LANG === "en" ? `If you keep the key point from this question, that's enough for now. ${closing}` : `ここでは今回のポイントを押さえられれば十分です。${closing}`;
   }
   return `${extraText} ${closing}`;
 }
