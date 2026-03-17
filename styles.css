@@ -37,6 +37,38 @@ body {
   min-height: 100vh;
 }
 
+.lang-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 30;
+  display: inline-flex;
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid rgba(108, 100, 88, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 254, 250, 0.88);
+  backdrop-filter: blur(10px);
+}
+
+.lang-toggle__link {
+  min-width: 40px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  color: var(--muted);
+  text-decoration: none;
+  text-align: center;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.lang-toggle__link.is-active {
+  background: var(--ink);
+  color: #fffdfa;
+}
+
 .page-shell--slide {
   display: grid;
   align-items: center;
