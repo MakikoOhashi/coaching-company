@@ -9,9 +9,8 @@
   <body>
     <main class="page-shell page-shell--slide">
       <article class="slide-card">
-        <p class="session-card__label">2. Question panel</p>
+        <p class="session-card__label">4. Question</p>
         <h2 id="questionTopic" class="slide-title">読み込み中です...</h2>
-        <p id="questionIntro" class="question-intro"></p>
         <p id="questionStem" class="question-stem"></p>
         <div id="choiceList" class="choice-list"></div>
         <button id="answerButton" class="session-button" type="button">回答する</button>
@@ -19,7 +18,7 @@
     </main>
 
     <script type="module">
-      import { buildQuestionIntro, buildQuestionTopic, getStore, loadQuestion, mergeStore, submitAnswer } from "./session.js";
+      import { buildQuestionTopic, getStore, loadQuestion, mergeStore, submitAnswer } from "./session.js";
 
       mergeStore({ stage: "question" });
       const store = getStore();
@@ -30,7 +29,6 @@
 
       let selectedChoice = null;
       document.getElementById("questionTopic").textContent = buildQuestionTopic(question);
-      document.getElementById("questionIntro").textContent = buildQuestionIntro();
       document.getElementById("questionStem").textContent = question.stem;
 
       const choiceList = document.getElementById("choiceList");
@@ -54,9 +52,10 @@
         mergeStore({
           currentQuestion: question,
           lastResult: payload.result,
+          selectedChoice,
           studentState: payload.studentState,
           signals: payload.signals,
-          stage: "intervention",
+          stage: "coach",
         });
         window.location.href = "./intervention.html";
       });

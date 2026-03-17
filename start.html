@@ -51,6 +51,9 @@
       const overviewPanel = document.getElementById("overviewPanel");
       const toggleOverviewButton = document.getElementById("toggleOverviewButton");
 
+      overviewPanel.hidden = true;
+      toggleOverviewButton.textContent = "いまの状況を見る";
+
       toggleOverviewButton.addEventListener("click", () => {
         overviewPanel.hidden = !overviewPanel.hidden;
         toggleOverviewButton.textContent = overviewPanel.hidden ? "いまの状況を見る" : "いまの状況を閉じる";

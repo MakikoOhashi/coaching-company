@@ -9,10 +9,10 @@
   <body>
     <main class="page-shell page-shell--slide">
       <article class="slide-card">
-        <p class="session-card__label">4. Session summary</p>
+        <p class="session-card__label">6. Summary</p>
         <h2 class="slide-title">Close the session</h2>
         <p id="summaryText" class="session-card__body">読み込み中です...</p>
-        <p class="question-intro">5秒後に次の問題へ進みます。</p>
+        <p id="countdownText" class="question-intro">15秒後に次の問題へ進みます。</p>
         <a class="session-button slide-link" href="./question.html">すぐ進む</a>
       </article>
     </main>
@@ -24,10 +24,24 @@
       const summaryText = store.summaryText || "ここまでで次へ進めます。次の問題に進みましょう。";
       document.getElementById("summaryText").textContent = summaryText;
       mergeStore({ stage: "summary" });
+      const countdownText = document.getElementById("countdownText");
+      let remainingSeconds = 15;
+
+      countdownText.textContent = `${remainingSeconds}秒後に次の問題へ進みます。`;
+
+      const countdownTimer = window.setInterval(() => {
+        remainingSeconds -= 1;
+        if (remainingSeconds <= 0) {
+          window.clearInterval(countdownTimer);
+          return;
+        }
+        countdownText.textContent = `${remainingSeconds}秒後に次の問題へ進みます。`;
+      }, 1000);
 
       window.setTimeout(() => {
+        window.clearInterval(countdownTimer);
         window.location.href = "./question.html";
-      }, 5000);
+      }, 15000);
     </script>
   </body>
 </html>

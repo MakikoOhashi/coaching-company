@@ -3,34 +3,38 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Coach Intervention</title>
+    <title>Coach</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <main class="page-shell page-shell--slide">
       <article class="slide-card">
-        <p class="session-card__label">3. Coach intervention</p>
-        <h2 class="slide-title">After each answer</h2>
-        <div id="resultFeedback" class="answer-feedback"></div>
-        <p id="coachLead" class="session-card__body"></p>
-
-        <div id="reflectionPanel" class="reflection-panel">
-          <div id="reflectionThread" class="reflection-thread"></div>
-          <form id="reflectionForm" class="reflection-form">
-            <label id="reflectionLabel" class="reflection-form__label" for="reflectionInput">短く説明してみてください</label>
-            <input id="reflectionInput" class="reflection-form__input" type="text" autocomplete="off" />
-            <button id="reflectionSubmit" class="session-button" type="submit">送信</button>
-          </form>
+        <p class="session-card__label">5. 解説と介入</p>
+        <h2 class="slide-title">解説を確認して、短く整理します</h2>
+        <div id="questionRecall" class="question-recall" hidden>
+          <p class="question-recall__label">今の問題</p>
+          <p id="questionRecallStem" class="question-recall__stem"></p>
+          <p id="questionRecallChoice" class="question-recall__choice"></p>
         </div>
+        <div id="resultFeedback" class="answer-feedback"></div>
+        <div id="reflectionThread" class="reflection-thread"></div>
 
-        <a id="nextLink" class="session-button slide-link" href="./summary.html" hidden>次へ</a>
+        <form id="reflectionForm" class="reflection-form">
+          <label id="reflectionLabel" class="reflection-form__label" for="reflectionInput">短く説明してみてください</label>
+          <input id="reflectionInput" class="reflection-form__input" type="text" autocomplete="off" />
+          <button id="reflectionSubmit" class="session-button" type="submit">送信</button>
+        </form>
+
+        <div id="postReflectionActions" class="stage-actions" hidden>
+          <button id="continueReflectionButton" class="session-button session-button--ghost" type="button">もう少し続ける</button>
+          <a id="nextLink" class="session-button slide-link" href="./summary.html">次へ進む</a>
+        </div>
       </article>
     </main>
 
     <script type="module">
       import {
         buildInitialReflectionPrompt,
-        buildInterventionLead,
         buildSummaryText,
         getStore,
         mergeStore,
@@ -41,35 +45,58 @@
       const question = store.currentQuestion;
       const result = store.lastResult;
       const studentState = store.studentState;
+      const selectedChoice = store.selectedChoice;
       if (!question || !result || !studentState) {
-        window.location.href = "./start.html";
+        window.location.href = "./question.html";
       }
 
-      mergeStore({ stage: "intervention" });
+      mergeStore({ stage: "coach" });
 
-      const resultFeedback = document.getElementById("resultFeedback");
-      const coachLead = document.getElementById("coachLead");
       const reflectionThread = document.getElementById("reflectionThread");
       const reflectionForm = document.getElementById("reflectionForm");
       const reflectionLabel = document.getElementById("reflectionLabel");
       const reflectionInput = document.getElementById("reflectionInput");
+      const reflectionSubmit = document.getElementById("reflectionSubmit");
+      const postReflectionActions = document.getElementById("postReflectionActions");
+      const continueReflectionButton = document.getElementById("continueReflectionButton");
       const nextLink = document.getElementById("nextLink");
-
-      const initialPrompt = buildInitialReflectionPrompt(result);
-      const lead = buildInterventionLead(result);
-      let coachTurn = 1;
-      let mode = result.isCorrect ? "correct_check" : "mistake_review";
+      const resultFeedback = document.getElementById("resultFeedback");
+      const questionRecall = document.getElementById("questionRecall");
+      const questionRecallStem = document.getElementById("questionRecallStem");
+      const questionRecallChoice = document.getElementById("questionRecallChoice");
 
       resultFeedback.dataset.result = result.isCorrect ? "correct" : "incorrect";
       resultFeedback.textContent = result.isCorrect
-        ? `Correct. ${result.explanation}`
-        : `Not quite. Correct answer: ${result.correct}. ${result.explanation}`;
-      coachLead.textContent = lead;
+        ? `正解です。${result.explanation}`
+        : `正解は ${result.correct} です。${result.explanation}`;
+
+      if (question?.stem && selectedChoice) {
+        questionRecall.hidden = false;
+        questionRecallStem.textContent = question.stem;
+        questionRecallChoice.textContent = `あなたの回答: ${selectedChoice}. ${question.choices[selectedChoice - 1] || ""}`;
+      }
+
+      const initialPrompt = buildInitialReflectionPrompt(result);
+      let coachTurn = 1;
+      let currentMode = result.isCorrect ? "correct_check" : "mistake_review";
+
       reflectionThread.innerHTML = `<div class="reflection-bubble" data-role="coach">${initialPrompt}</div>`;
       reflectionLabel.textContent = result.isCorrect ? "短く説明してみてください" : "どこがずれていたかを一言で整理してください";
       reflectionInput.placeholder = result.isCorrect
         ? "例: 先取特権は一定の債権を確保するために優先して回収できる権利"
-        : "例: 賃借人の動産まで及ぶと広く考えすぎた";
+        : "例: ◎◎まで対象になると勘違いした / ◎◎が特則だと思っていた";
+
+      continueReflectionButton.addEventListener("click", () => {
+        currentMode = "follow_up";
+        reflectionForm.hidden = false;
+        postReflectionActions.hidden = true;
+        reflectionInput.disabled = false;
+        reflectionSubmit.disabled = false;
+        reflectionInput.value = "";
+        reflectionLabel.textContent = "この論点について続けて聞けます";
+        reflectionInput.placeholder = "例: 先取特権の意味を教えてください / この問題の特則はありますか？";
+        reflectionInput.focus();
+      });
 
       reflectionForm.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -82,7 +109,7 @@
           explanationText: result.explanation,
           learnerReflection,
           coachTurn,
-          mode,
+          mode: currentMode,
         });
 
         reflectionThread.insertAdjacentHTML("beforeend", `<div class="reflection-bubble" data-role="coach">${payload.coachMessage}</div>`);
@@ -92,13 +119,12 @@
         });
 
         reflectionInput.disabled = true;
-        document.getElementById("reflectionSubmit").disabled = true;
-        nextLink.hidden = false;
-      });
+        reflectionSubmit.disabled = true;
+        coachTurn = Math.min(3, coachTurn + 1);
 
-      if (!result.isCorrect) {
-        mergeStore({ summaryText: buildSummaryText(studentState) });
-      }
+        reflectionForm.hidden = true;
+        postReflectionActions.hidden = false;
+      });
     </script>
   </body>
 </html>

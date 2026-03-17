@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Result</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page-shell page-shell--slide">
+      <article class="slide-card">
+        <p class="session-card__label">5. Coach</p>
+        <h2 id="resultPrompt" class="slide-title">読み込み中です...</h2>
+        <a class="session-button slide-link" href="./intervention.html">続ける</a>
+      </article>
+    </main>
+
+    <script type="module">
+      import { buildReasonPrompt, getStore, mergeStore } from "./session.js";
+
+      const store = getStore();
+      const result = store.lastResult;
+      if (!result) {
+        window.location.href = "./question.html";
+      }
+
+      mergeStore({ stage: "result" });
+      document.getElementById("resultPrompt").textContent = buildReasonPrompt(store.selectedChoice);
+    </script>
+  </body>
+</html>

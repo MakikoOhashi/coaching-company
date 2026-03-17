@@ -103,14 +103,30 @@ export function buildSessionIntro(studentState, signals) {
   return `前回の流れを踏まえると、今日は${studentState.currentSubject}を優先します。いまは ${studentState.currentMilestone} の段階なので、まずは今日の目標である ${signals.dailyTargetCorrect} 問正解を取りにいきましょう。`;
 }
 
+export function buildTopicMessage(question) {
+  if (!question?.subject && !question?.subtopic) {
+    return "今日の論点に入ります。";
+  }
+
+  if (question.subject && question.subtopic) {
+    return `${question.subject}、${question.subtopic}です。`;
+  }
+
+  return `${question.subject || question.subtopic}です。`;
+}
+
 export function buildQuestionTopic(question) {
-  const parts = ["導入問題", question.subject];
+  const parts = [];
+  if (question.subject) parts.push(question.subject);
   if (question.subtopic) parts.push(question.subtopic);
   return parts.join(" / ");
 }
 
-export function buildQuestionIntro() {
-  return "まずは前回つまずいた論点を1問だけ確認します。このあと今日の本題に入ります。";
+export function buildReasonPrompt(selectedChoice) {
+  if (selectedChoice) {
+    return `${selectedChoice}を選んだんですね。理由を一言で言えますか？`;
+  }
+  return "この答えにした理由を、一言で言えますか？";
 }
 
 export function buildInterventionLead(result) {
@@ -122,12 +138,15 @@ export function buildInterventionLead(result) {
 
 export function buildInitialReflectionPrompt(result) {
   if (result.isCorrect) {
-    return "正解です。この論点は取れています。次へ進む前に、「先取特権」が何を意味するかを短く言えるかだけ確認しておきましょう。";
+    return "この論点は取れています。次へ進む前に、「先取特権」が何を意味するかを短く言えるかだけ確認しておきましょう。";
   }
   return "今回の誤りは、論点を広く取りすぎたか、特則を落とした可能性があります。まず「どこが言い過ぎだったか」を一言で整理してみてください。";
 }
 
 export function buildSummaryText(studentState, extraText = "") {
-  const closing = `この1問を反映して、現在の合格確率は${studentState.passProbability}%です。次も${studentState.currentSubject}を続けて確認しましょう。`;
-  return extraText ? `${extraText} ${closing}` : closing;
+  const closing = `現在の合格確率は${studentState.passProbability}%です。次も${studentState.currentSubject}を続けて確認しましょう。`;
+  if (!extraText) {
+    return `ここでは今回のポイントを押さえられれば十分です。${closing}`;
+  }
+  return `${extraText} ${closing}`;
 }
