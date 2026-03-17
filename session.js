@@ -12,8 +12,10 @@ const STUDENT_STATE_PATH = "/coaching/student-state";
 const CURRENT_QUESTION_PATH = "/coaching/company-question";
 const SUBMIT_ANSWER_PATH = "/coaching/company-submit-answer";
 const REFLECTION_REPLY_PATH = "/coaching/company-reflection-coach";
+const TRANSLATE_PATH = "/coaching/translate";
 
 const STORAGE_KEY = "coaching-company-session";
+const TRANSLATION_CACHE_KEY = "coaching-company-translation-cache";
 
 const COPY = {
   ja: {
@@ -107,6 +109,18 @@ function readStore() {
 
 function writeStore(next) {
   window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+}
+
+function readTranslationCache() {
+  try {
+    return JSON.parse(window.sessionStorage.getItem(TRANSLATION_CACHE_KEY) || "{}");
+  } catch {
+    return {};
+  }
+}
+
+function writeTranslationCache(next) {
+  window.sessionStorage.setItem(TRANSLATION_CACHE_KEY, JSON.stringify(next));
 }
 
 export function mergeStore(patch) {
@@ -268,6 +282,29 @@ export async function requestReflection({ questionText, explanationText, learner
     coachTurn,
     mode,
   });
+}
+
+export async function translateTexts(texts, targetLang = LANG) {
+  if (targetLang !== "en") return texts;
+
+  const normalizedTexts = texts.map((text) => (typeof text === "string" ? text : ""));
+  const cache = readTranslationCache();
+  const missing = [...new Set(normalizedTexts.filter((text) => text && !cache[`en:${text}`]))];
+
+  if (missing.length > 0) {
+    const payload = await postJson(TRANSLATE_PATH, {
+      texts: missing,
+      targetLang,
+    });
+    const nextCache = { ...cache };
+    missing.forEach((text, index) => {
+      nextCache[`en:${text}`] = payload.translations?.[index] || text;
+    });
+    writeTranslationCache(nextCache);
+  }
+
+  const latestCache = readTranslationCache();
+  return normalizedTexts.map((text) => (text ? latestCache[`en:${text}`] || text : text));
 }
 
 export function buildCoachScript(studentState, dailyQuota) {

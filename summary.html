@@ -18,13 +18,14 @@
     </main>
 
     <script type="module">
-      import { getStore, mergeStore, mountLanguageToggle, t, withLang } from "./session.js";
+      import { getStore, mergeStore, mountLanguageToggle, t, translateTexts, withLang, LANG } from "./session.js";
 
       mountLanguageToggle();
       document.documentElement.lang = new URLSearchParams(window.location.search).get("lang") || "ja";
       const store = getStore();
       const summaryText = store.summaryText || "ここまでで次へ進めます。次の問題に進みましょう。";
-      document.getElementById("summaryText").textContent = summaryText;
+      const [translatedSummary] = LANG === "en" ? await translateTexts([summaryText]) : [summaryText];
+      document.getElementById("summaryText").textContent = translatedSummary;
       mergeStore({ stage: "summary" });
       const countdownText = document.getElementById("countdownText");
       const skipAheadLink = document.getElementById("skipAheadLink");

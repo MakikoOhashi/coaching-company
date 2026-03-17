@@ -37,10 +37,12 @@
         buildInitialReflectionPrompt,
         buildSummaryText,
         getStore,
+        LANG,
         mergeStore,
         mountLanguageToggle,
         requestReflection,
         t,
+        translateTexts,
         withLang,
       } from "./session.js";
 
@@ -76,26 +78,37 @@
       nextLink.textContent = t("proceedNext");
       nextLink.href = withLang("./summary.html");
 
+      const initialPrompt = buildInitialReflectionPrompt(result);
+      let resultText = result.isCorrect ? `正解です。${result.explanation}` : `正解は ${result.correct} です。${result.explanation}`;
+      let recallStemText = question?.stem || "";
+      let recallChoiceText = selectedChoice ? `あなたの回答: ${selectedChoice}. ${question.choices[selectedChoice - 1] || ""}` : "";
+      let coachPromptText = initialPrompt;
+
+      if (LANG === "en") {
+        const translated = await translateTexts([resultText, recallStemText, recallChoiceText, coachPromptText]);
+        [resultText, recallStemText, recallChoiceText, coachPromptText] = translated;
+      }
+
       resultFeedback.dataset.result = result.isCorrect ? "correct" : "incorrect";
-      resultFeedback.textContent = result.isCorrect
-        ? `正解です。${result.explanation}`
-        : `正解は ${result.correct} です。${result.explanation}`;
+      resultFeedback.textContent = resultText;
 
       if (question?.stem && selectedChoice) {
         questionRecall.hidden = false;
-        questionRecallStem.textContent = question.stem;
-        questionRecallChoice.textContent = `あなたの回答: ${selectedChoice}. ${question.choices[selectedChoice - 1] || ""}`;
+        questionRecallStem.textContent = recallStemText;
+        questionRecallChoice.textContent = recallChoiceText;
       }
-
-      const initialPrompt = buildInitialReflectionPrompt(result);
       let coachTurn = 1;
       let currentMode = result.isCorrect ? "correct_check" : "mistake_review";
 
-      reflectionThread.innerHTML = `<div class="reflection-bubble" data-role="coach">${initialPrompt}</div>`;
+      reflectionThread.innerHTML = `<div class="reflection-bubble" data-role="coach">${coachPromptText}</div>`;
       reflectionLabel.textContent = result.isCorrect ? t("explainBriefly") : t("mistakePrompt");
       reflectionInput.placeholder = result.isCorrect
-        ? "例: ◎◎とは、△△のために認められる権利"
-        : "例: ◎◎まで対象になると勘違いした / ◎◎が特則だと思っていた";
+        ? LANG === "en"
+          ? "Example: ◎◎ means a right recognized for △△"
+          : "例: ◎◎とは、△△のために認められる権利"
+        : LANG === "en"
+          ? "Example: I misunderstood that it also applied to ◎◎ / I thought ◎◎ was the exception"
+          : "例: ◎◎まで対象になると勘違いした / ◎◎が特則だと思っていた";
 
       continueReflectionButton.addEventListener("click", () => {
         currentMode = "follow_up";
@@ -104,8 +117,10 @@
         reflectionInput.disabled = false;
         reflectionSubmit.disabled = false;
         reflectionInput.value = "";
-        reflectionLabel.textContent = "この論点について続けて聞けます";
-        reflectionInput.placeholder = "例: 先取特権の意味を教えてください / この問題の特則はありますか？";
+        reflectionLabel.textContent = LANG === "en" ? "You can continue asking about this point" : "この論点について続けて聞けます";
+        reflectionInput.placeholder = LANG === "en"
+          ? "Example: What does statutory lien mean? / Is there an exception in this question?"
+          : "例: 先取特権の意味を教えてください / この問題の特則はありますか？";
         reflectionInput.focus();
       });
 
@@ -123,9 +138,12 @@
           mode: currentMode,
         });
 
-        reflectionThread.insertAdjacentHTML("beforeend", `<div class="reflection-bubble" data-role="coach">${payload.coachMessage}</div>`);
+        const coachMessage = LANG === "en" ? (await translateTexts([payload.coachMessage]))[0] : payload.coachMessage;
+        reflectionThread.insertAdjacentHTML("beforeend", `<div class="reflection-bubble" data-role="coach">${coachMessage}</div>`);
+        const summaryBase = buildSummaryText(studentState, payload.coachMessage);
+        const summaryText = LANG === "en" ? (await translateTexts([summaryBase]))[0] : summaryBase;
         mergeStore({
-          summaryText: buildSummaryText(studentState, payload.coachMessage),
+          summaryText,
           stage: "summary",
         });
 

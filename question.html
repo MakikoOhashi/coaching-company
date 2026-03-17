@@ -18,7 +18,7 @@
     </main>
 
     <script type="module">
-      import { buildQuestionTopic, getStore, loadQuestion, mergeStore, mountLanguageToggle, submitAnswer, t } from "./session.js";
+      import { buildQuestionTopic, getStore, loadQuestion, mergeStore, mountLanguageToggle, submitAnswer, t, translateTexts, LANG } from "./session.js";
 
       mountLanguageToggle();
       document.documentElement.lang = new URLSearchParams(window.location.search).get("lang") || "ja";
@@ -30,11 +30,14 @@
       }
 
       let selectedChoice = null;
-      document.getElementById("questionTopic").textContent = buildQuestionTopic(question);
-      document.getElementById("questionStem").textContent = question.stem;
+      const questionTexts = [buildQuestionTopic(question), question.stem, ...question.choices];
+      const translatedTexts = LANG === "en" ? await translateTexts(questionTexts) : questionTexts;
+      const [questionTopicText, questionStemText, ...choiceTexts] = translatedTexts;
+      document.getElementById("questionTopic").textContent = questionTopicText;
+      document.getElementById("questionStem").textContent = questionStemText;
 
       const choiceList = document.getElementById("choiceList");
-      question.choices.forEach((choiceText, index) => {
+      choiceTexts.forEach((choiceText, index) => {
         const button = document.createElement("button");
         button.type = "button";
         button.className = "choice-button";

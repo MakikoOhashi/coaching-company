@@ -15,7 +15,7 @@
       </article>
     </main>
     <script type="module">
-      import { buildSessionIntro, getStore, loadStudentState, mergeStore, mountLanguageToggle, t, withLang } from "./session.js";
+      import { buildSessionIntro, getStore, loadStudentState, mergeStore, mountLanguageToggle, t, translateTexts, withLang, LANG } from "./session.js";
       mountLanguageToggle();
       document.documentElement.lang = new URLSearchParams(window.location.search).get("lang") || "ja";
       const stored = getStore();
@@ -30,7 +30,9 @@
         dailyQuota = payload.dailyQuota;
       }
 
-      document.getElementById("introTitle").textContent = buildSessionIntro(studentState, signals, dailyQuota);
+      const introText = buildSessionIntro(studentState, signals, dailyQuota);
+      const [translatedIntro] = LANG === "en" ? await translateTexts([introText]) : [introText];
+      document.getElementById("introTitle").textContent = translatedIntro;
       document.getElementById("introNextLink").textContent = t("next");
       document.getElementById("introNextLink").href = withLang("./topic.html");
       mergeStore({ stage: "intro" });

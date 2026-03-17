@@ -45,7 +45,7 @@
     </main>
 
     <script type="module">
-      import { buildCoachScript, getStore, loadStudentState, mergeStore, mountLanguageToggle, t, withLang } from "./session.js";
+      import { buildCoachScript, getStore, loadStudentState, mergeStore, mountLanguageToggle, t, translateTexts, withLang, LANG } from "./session.js";
 
       const coachScript = document.getElementById("coachScript");
       const overviewPanel = document.getElementById("overviewPanel");
@@ -77,13 +77,22 @@
       const payload = (await loadStudentState()) || getStore();
       const { studentState, dailyQuota } = payload;
       mergeStore({ stage: "start" });
+      const dynamicTexts = [
+        buildCoachScript(studentState, dailyQuota),
+        studentState.currentSubject,
+        studentState.currentMilestone,
+        studentState.riskLevel,
+        dailyQuota?.nextActionToday || studentState.nextActionToday,
+      ];
+      const [coachText, subjectText, milestoneText, riskText, nextActionText] =
+        LANG === "en" ? await translateTexts(dynamicTexts) : dynamicTexts;
 
-      coachScript.textContent = buildCoachScript(studentState, dailyQuota);
-      document.getElementById("currentSubject").textContent = studentState.currentSubject;
-      document.getElementById("currentMilestone").textContent = studentState.currentMilestone;
-      document.getElementById("riskLevel").textContent = studentState.riskLevel;
+      coachScript.textContent = coachText;
+      document.getElementById("currentSubject").textContent = subjectText;
+      document.getElementById("currentMilestone").textContent = milestoneText;
+      document.getElementById("riskLevel").textContent = riskText;
       document.getElementById("passProbability").textContent = `${studentState.passProbability}%`;
-      document.getElementById("nextActionToday").textContent = dailyQuota?.nextActionToday || studentState.nextActionToday;
+      document.getElementById("nextActionToday").textContent = nextActionText;
     </script>
   </body>
 </html>

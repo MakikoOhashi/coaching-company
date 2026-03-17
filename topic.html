@@ -16,7 +16,7 @@
     </main>
 
     <script type="module">
-      import { buildTopicMessage, getStore, loadQuestion, mergeStore, mountLanguageToggle, t, withLang } from "./session.js";
+      import { buildTopicMessage, getStore, loadQuestion, mergeStore, mountLanguageToggle, t, translateTexts, withLang, LANG } from "./session.js";
 
       mountLanguageToggle();
       document.documentElement.lang = new URLSearchParams(window.location.search).get("lang") || "ja";
@@ -27,7 +27,9 @@
         question = await loadQuestion();
       }
 
-      document.getElementById("topicMessage").textContent = buildTopicMessage(question);
+      const topicText = buildTopicMessage(question);
+      const [translatedTopic] = LANG === "en" ? await translateTexts([topicText]) : [topicText];
+      document.getElementById("topicMessage").textContent = translatedTopic;
       document.getElementById("topicNextLink").textContent = t("next");
       document.getElementById("topicNextLink").href = withLang("./question.html");
     </script>
