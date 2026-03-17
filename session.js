@@ -31,6 +31,11 @@ const COPY = {
     currentRisk: "現在のリスク",
     passChance: "合格可能性",
     nextAction: "今日やること",
+    timePrompt: "今日は何分取れそうですか？",
+    timeShort: "15分",
+    timeNormal: "30分",
+    timeLong: "60分以上",
+    timeAdviceLabel: "今日の見立て",
     introTitle: "昨日つまずいた論点を、まず1問だけ確認しましょう。",
     next: "次へ",
     topicFallback: "今日の論点に入ります。",
@@ -43,6 +48,9 @@ const COPY = {
     continueChat: "もう少し続ける",
     proceedNext: "次へ進む",
     closeSession: "Close the session",
+    dayEndTitle: "今日もお疲れさまでした。",
+    dayEndBody: "今日の予定分はここまでです。また明日、続きから進めましょう。",
+    backTop: "トップに戻る",
     autoAdvance: (seconds) => `${seconds}秒後に次の問題へ進みます。`,
     skipAhead: "すぐ進む",
     loading: "読み込み中です...",
@@ -60,6 +68,11 @@ const COPY = {
     currentRisk: "Current risk",
     passChance: "Pass probability",
     nextAction: "Today's action",
+    timePrompt: "How much time do you have today?",
+    timeShort: "15 min",
+    timeNormal: "30 min",
+    timeLong: "60+ min",
+    timeAdviceLabel: "Coach suggestion",
     introTitle: "Let's quickly revisit the point that felt shaky last time.",
     next: "Next",
     topicFallback: "Let's move into today's topic.",
@@ -72,6 +85,9 @@ const COPY = {
     continueChat: "Ask one more thing",
     proceedNext: "Go to next",
     closeSession: "Close the session",
+    dayEndTitle: "Great work today.",
+    dayEndBody: "You finished today's planned set. Let's continue from here tomorrow.",
+    backTop: "Back to top",
     autoAdvance: (seconds) => `Moving to the next question in ${seconds} seconds.`,
     skipAhead: "Move now",
     loading: "Loading...",
@@ -198,6 +214,7 @@ export async function loadStudentState() {
 }
 
 export function deriveDailyQuota(studentState, signals, store = {}) {
+  const selectedTime = store.availableTime || AVAILABLE_TIME;
   const recentWrongTopic = store.currentQuestion?.subtopic || null;
   const recentFollowupTopic = store.lastResult && !store.lastResult.isCorrect ? store.currentQuestion?.subtopic || null : null;
 
@@ -209,9 +226,9 @@ export function deriveDailyQuota(studentState, signals, store = {}) {
   }
 
   let questionCount = 3;
-  if (AVAILABLE_TIME === "short") {
+  if (selectedTime === "short") {
     questionCount = 2;
-  } else if (AVAILABLE_TIME === "normal") {
+  } else if (selectedTime === "normal") {
     questionCount = sessionMode === "advance" ? 3 : 2;
   } else {
     questionCount = sessionMode === "advance" ? 4 : 3;
@@ -248,7 +265,7 @@ export function deriveDailyQuota(studentState, signals, store = {}) {
     targetUnderstandingGoal,
     reason,
     nextActionToday,
-    availableTime: AVAILABLE_TIME,
+    availableTime: selectedTime,
   };
 }
 
@@ -315,6 +332,14 @@ export function buildCoachScript(studentState, dailyQuota) {
   return `おはようございます。昨日の続きから始めましょう。今日は${studentState.currentSubject}から入ります。いまは ${studentState.currentMilestone} の段階です。まずは ${nextAction}`;
 }
 
+export function buildTimeAdvice(studentState, dailyQuota) {
+  const count = dailyQuota?.questionCount || 2;
+  if (LANG === "en") {
+    return `If you can take about ${dailyQuota?.availableTime === "short" ? "15 minutes" : dailyQuota?.availableTime === "long" ? "60 minutes or more" : "30 minutes"}, ${count} questions is a good target today. Finishing this set should help your pass probability move in the right direction.`;
+  }
+  return `今日は${dailyQuota?.availableTime === "short" ? "15分" : dailyQuota?.availableTime === "long" ? "60分以上" : "30分"}ほど取れそうなら、${count}問前後がちょうど良さそうです。今日のセットを終えると、合格可能性の回復や前進につながります。`;
+}
+
 export function buildSessionIntro(studentState, signals, dailyQuota) {
   const sessionMode = dailyQuota?.sessionMode || "advance";
   const questionCount = dailyQuota?.questionCount || signals.dailyTargetCorrect;
@@ -379,4 +404,13 @@ export function buildSummaryText(studentState, extraText = "") {
     return LANG === "en" ? `If you keep the key point from this question, that's enough for now. ${closing}` : `ここでは今回のポイントを押さえられれば十分です。${closing}`;
   }
   return `${extraText} ${closing}`;
+}
+
+export function getNextStageHref(store = getStore()) {
+  const completedCount = Number(store.completedCount || 0);
+  const plannedCount = Number(store.dailyQuota?.questionCount || 0);
+  if (plannedCount > 0 && completedCount >= plannedCount) {
+    return withLang("./day-end.html");
+  }
+  return withLang("./question.html");
 }

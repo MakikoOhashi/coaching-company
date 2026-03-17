@@ -60,6 +60,7 @@
           selectedChoice,
           studentState: payload.studentState,
           signals: payload.signals,
+          completedCount: Number(getStore().completedCount || 0) + 1,
           stage: "coach",
         });
         window.location.href = "./intervention.html";

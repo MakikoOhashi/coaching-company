@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Day End</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page-shell page-shell--slide">
+      <article class="slide-card">
+        <h2 id="dayEndTitle" class="slide-title"></h2>
+        <p id="dayEndBody" class="session-card__body"></p>
+        <a id="dayEndTopLink" class="session-button slide-link" href="./index.html"></a>
+      </article>
+    </main>
+
+    <script type="module">
+      import { clearStore, mountLanguageToggle, t, withLang } from "./session.js";
+
+      mountLanguageToggle();
+      document.documentElement.lang = new URLSearchParams(window.location.search).get("lang") || "ja";
+      document.getElementById("dayEndTitle").textContent = t("dayEndTitle");
+      document.getElementById("dayEndBody").textContent = t("dayEndBody");
+      document.getElementById("dayEndTopLink").textContent = t("backTop");
+      document.getElementById("dayEndTopLink").href = withLang("./index.html");
+      clearStore();
+    </script>
+  </body>
+</html>

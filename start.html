@@ -12,6 +12,19 @@
         <p id="coachLabel" class="coach-script__label"></p>
         <p id="coachScript" class="coach-script__body"></p>
 
+        <section class="overview-panel">
+          <p id="timePromptLabel" class="next-action__label"></p>
+          <div class="stage-actions">
+            <button id="timeShortButton" class="session-button session-button--ghost" type="button"></button>
+            <button id="timeNormalButton" class="session-button session-button--ghost" type="button"></button>
+            <button id="timeLongButton" class="session-button session-button--ghost" type="button"></button>
+          </div>
+          <article class="next-action">
+            <p id="timeAdviceLabel" class="next-action__label"></p>
+            <p id="timeAdviceBody" class="next-action__body">-</p>
+          </article>
+        </section>
+
         <div class="stage-actions">
           <button id="toggleOverviewButton" class="session-button session-button--ghost" type="button"></button>
           <a id="startYesLink" class="session-button slide-link" href="./intro.html"></a>
@@ -45,7 +58,19 @@
     </main>
 
     <script type="module">
-      import { buildCoachScript, getStore, loadStudentState, mergeStore, mountLanguageToggle, t, translateTexts, withLang, LANG } from "./session.js";
+      import {
+        buildCoachScript,
+        buildTimeAdvice,
+        deriveDailyQuota,
+        getStore,
+        loadStudentState,
+        mergeStore,
+        mountLanguageToggle,
+        t,
+        translateTexts,
+        withLang,
+        LANG,
+      } from "./session.js";
 
       const coachScript = document.getElementById("coachScript");
       const overviewPanel = document.getElementById("overviewPanel");
@@ -63,6 +88,11 @@
       document.getElementById("riskLevelLabel").textContent = t("currentRisk");
       document.getElementById("passProbabilityLabel").textContent = t("passChance");
       document.getElementById("nextActionLabel").textContent = t("nextAction");
+      document.getElementById("timePromptLabel").textContent = t("timePrompt");
+      document.getElementById("timeAdviceLabel").textContent = t("timeAdviceLabel");
+      document.getElementById("timeShortButton").textContent = t("timeShort");
+      document.getElementById("timeNormalButton").textContent = t("timeNormal");
+      document.getElementById("timeLongButton").textContent = t("timeLong");
       startYesLink.textContent = t("yes");
       startYesLink.href = withLang("./intro.html");
 
@@ -75,24 +105,46 @@
       });
 
       const payload = (await loadStudentState()) || getStore();
-      const { studentState, dailyQuota } = payload;
-      mergeStore({ stage: "start" });
-      const dynamicTexts = [
-        buildCoachScript(studentState, dailyQuota),
-        studentState.currentSubject,
-        studentState.currentMilestone,
-        studentState.riskLevel,
-        dailyQuota?.nextActionToday || studentState.nextActionToday,
-      ];
-      const [coachText, subjectText, milestoneText, riskText, nextActionText] =
-        LANG === "en" ? await translateTexts(dynamicTexts) : dynamicTexts;
+      const { studentState, signals } = payload;
+      mergeStore({ stage: "start", completedCount: 0 });
 
-      coachScript.textContent = coachText;
-      document.getElementById("currentSubject").textContent = subjectText;
-      document.getElementById("currentMilestone").textContent = milestoneText;
-      document.getElementById("riskLevel").textContent = riskText;
-      document.getElementById("passProbability").textContent = `${studentState.passProbability}%`;
-      document.getElementById("nextActionToday").textContent = nextActionText;
+      async function renderStart() {
+        const store = getStore();
+        const dailyQuota = deriveDailyQuota(studentState, signals, store);
+        mergeStore({ dailyQuota });
+
+        const dynamicTexts = [
+          buildCoachScript(studentState, dailyQuota),
+          buildTimeAdvice(studentState, dailyQuota),
+          studentState.currentSubject,
+          studentState.currentMilestone,
+          studentState.riskLevel,
+          dailyQuota?.nextActionToday || studentState.nextActionToday,
+        ];
+        const [coachText, timeAdviceText, subjectText, milestoneText, riskText, nextActionText] =
+          LANG === "en" ? await translateTexts(dynamicTexts) : dynamicTexts;
+
+        coachScript.textContent = coachText;
+        document.getElementById("timeAdviceBody").textContent = timeAdviceText;
+        document.getElementById("currentSubject").textContent = subjectText;
+        document.getElementById("currentMilestone").textContent = milestoneText;
+        document.getElementById("riskLevel").textContent = riskText;
+        document.getElementById("passProbability").textContent = `${studentState.passProbability}%`;
+        document.getElementById("nextActionToday").textContent = nextActionText;
+      }
+
+      function bindTimeButton(id, value) {
+        document.getElementById(id).addEventListener("click", async () => {
+          mergeStore({ availableTime: value });
+          await renderStart();
+        });
+      }
+
+      bindTimeButton("timeShortButton", "short");
+      bindTimeButton("timeNormalButton", "normal");
+      bindTimeButton("timeLongButton", "long");
+
+      await renderStart();
     </script>
   </body>
 </html>

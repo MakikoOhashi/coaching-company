@@ -17,7 +17,7 @@
     </main>
 
     <script type="module">
-      import { getStore, mergeStore, mountLanguageToggle, t, translateTexts, withLang, LANG } from "./session.js";
+      import { getNextStageHref, getStore, mergeStore, mountLanguageToggle, t, translateTexts, LANG } from "./session.js";
 
       mountLanguageToggle();
       document.documentElement.lang = new URLSearchParams(window.location.search).get("lang") || "ja";
@@ -28,11 +28,12 @@
       mergeStore({ stage: "summary" });
       const countdownText = document.getElementById("countdownText");
       const skipAheadLink = document.getElementById("skipAheadLink");
+      const nextHref = getNextStageHref(store);
       let remainingSeconds = 15;
 
       document.getElementById("summaryTitle").textContent = t("closeSession");
       skipAheadLink.textContent = t("skipAhead");
-      skipAheadLink.href = withLang("./question.html");
+      skipAheadLink.href = nextHref;
       countdownText.textContent = t("autoAdvance", remainingSeconds);
 
       const countdownTimer = window.setInterval(() => {
@@ -46,7 +47,7 @@
 
       window.setTimeout(() => {
         window.clearInterval(countdownTimer);
-        window.location.href = withLang("./question.html");
+        window.location.href = nextHref;
       }, 15000);
     </script>
   </body>
