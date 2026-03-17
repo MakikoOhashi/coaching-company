@@ -40,3 +40,24 @@ create table if not exists coaching.question_exposures (
 
 create index if not exists idx_question_exposures_student on coaching.question_exposures(student_key, shown_at desc);
 create index if not exists idx_question_exposures_question on coaching.question_exposures(question_id);
+
+create table if not exists coaching.coach_interactions (
+  id uuid primary key default gen_random_uuid(),
+  student_key text not null,
+  question_id uuid references coaching.company_questions(id) on delete set null,
+  exposure_id uuid references coaching.question_exposures(id) on delete set null,
+  session_subject text,
+  interaction_type text not null,
+  mode text not null,
+  learner_input text,
+  coach_reply text not null,
+  classification text,
+  can_proceed boolean not null default true,
+  suggest_next boolean not null default false,
+  continued boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists idx_coach_interactions_student on coaching.coach_interactions(student_key, created_at desc);
+create index if not exists idx_coach_interactions_question on coaching.coach_interactions(question_id, created_at desc);
+create index if not exists idx_coach_interactions_type on coaching.coach_interactions(interaction_type, created_at desc);

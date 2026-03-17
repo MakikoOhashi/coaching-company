@@ -67,6 +67,7 @@ The repository stores the design and implementation source of this system, but i
 - [Coach Decision Spec](docs/coach-decision-spec.md)
 - [Coaching Goal Policy](docs/coaching-goal-policy.md)
 - [Daily Quota Design](docs/daily-quota-design.md)
+- [Coach Growth Data Design](docs/coach-growth-data-design.md)
 - [Intervention Strategy](docs/intervention-strategy.md)
 - [Coaching Schema SQL](docs/coaching-schema.sql)
 - [Coaching Schema Notes](docs/coaching-schema-notes.md)
