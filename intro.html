@@ -10,15 +10,27 @@
     <main class="page-shell page-shell--slide">
       <article class="slide-card">
         <p class="session-card__label">1. Session intro</p>
-        <h2 id="introTitle" class="slide-title">昨日つまずいた論点を、まず1問だけ確認しましょう。</h2>
+        <h2 id="introTitle" class="slide-title">読み込み中です...</h2>
         <a id="introNextLink" class="session-button slide-link" href="./topic.html">次へ</a>
       </article>
     </main>
     <script type="module">
-      import { mergeStore, mountLanguageToggle, t, withLang } from "./session.js";
+      import { buildSessionIntro, getStore, loadStudentState, mergeStore, mountLanguageToggle, t, withLang } from "./session.js";
       mountLanguageToggle();
       document.documentElement.lang = new URLSearchParams(window.location.search).get("lang") || "ja";
-      document.getElementById("introTitle").textContent = t("introTitle");
+      const stored = getStore();
+      let studentState = stored.studentState;
+      let signals = stored.signals;
+      let dailyQuota = stored.dailyQuota;
+
+      if (!studentState || !signals || !dailyQuota) {
+        const payload = await loadStudentState();
+        studentState = payload.studentState;
+        signals = payload.signals;
+        dailyQuota = payload.dailyQuota;
+      }
+
+      document.getElementById("introTitle").textContent = buildSessionIntro(studentState, signals, dailyQuota);
       document.getElementById("introNextLink").textContent = t("next");
       document.getElementById("introNextLink").href = withLang("./topic.html");
       mergeStore({ stage: "intro" });

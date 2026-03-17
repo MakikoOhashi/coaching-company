@@ -6,6 +6,7 @@ export const APP_ID = params.get("appId") || "coaching-company-web";
 export const GUEST_ID = params.get("guestId") || "coach-dashboard";
 export const COMPANY_STUDENT_KEY = params.get("studentKey") || "husband-company";
 export const LANG = resolveLang();
+export const AVAILABLE_TIME = resolveAvailableTime();
 
 const STUDENT_STATE_PATH = "/coaching/student-state";
 const CURRENT_QUESTION_PATH = "/coaching/company-question";
@@ -88,6 +89,14 @@ function resolveLang() {
   return "ja";
 }
 
+function resolveAvailableTime() {
+  const value = params.get("time");
+  if (value === "short" || value === "normal" || value === "long") {
+    return value;
+  }
+  return "normal";
+}
+
 function readStore() {
   try {
     return JSON.parse(window.sessionStorage.getItem(STORAGE_KEY) || "{}");
@@ -165,11 +174,68 @@ async function postJson(path, body) {
 
 export async function loadStudentState() {
   const payload = await postJson(STUDENT_STATE_PATH, {});
+  const dailyQuota = deriveDailyQuota(payload.studentState, payload.signals, readStore());
   mergeStore({
     studentState: payload.studentState,
     signals: payload.signals,
+    dailyQuota,
   });
-  return payload;
+  return { ...payload, dailyQuota };
+}
+
+export function deriveDailyQuota(studentState, signals, store = {}) {
+  const recentWrongTopic = store.currentQuestion?.subtopic || null;
+  const recentFollowupTopic = store.lastResult && !store.lastResult.isCorrect ? store.currentQuestion?.subtopic || null : null;
+
+  let sessionMode = "advance";
+  if (studentState.riskLevel === "high" || signals.streakCount <= 1) {
+    sessionMode = "recovery";
+  } else if (recentFollowupTopic || signals.blockAccuracyRate < 60) {
+    sessionMode = "stabilize";
+  }
+
+  let questionCount = 3;
+  if (AVAILABLE_TIME === "short") {
+    questionCount = 2;
+  } else if (AVAILABLE_TIME === "normal") {
+    questionCount = sessionMode === "advance" ? 3 : 2;
+  } else {
+    questionCount = sessionMode === "advance" ? 4 : 3;
+  }
+
+  const introQuestionTopic = recentWrongTopic || recentFollowupTopic || studentState.currentSubject;
+  const targetUnderstandingGoal =
+    sessionMode === "recovery"
+      ? `${studentState.currentSubject}の基本論点を広げすぎずに押さえる`
+      : sessionMode === "stabilize"
+        ? `${studentState.currentSubject}の揺れている論点を整理して安定させる`
+        : `${studentState.currentSubject}の理解を保ったまま前へ進める`;
+
+  const reason =
+    sessionMode === "recovery"
+      ? "直近のリスクが高いため、まずはリズム回復を優先します。"
+      : sessionMode === "stabilize"
+        ? "理解がまだ揺れているため、今日は定着を優先します。"
+        : "理解が比較的安定しているため、今日は前進を優先します。";
+
+  const nextActionToday =
+    sessionMode === "recovery"
+      ? `${studentState.currentSubject}を導入1問＋本題1問で軽く立て直しましょう。`
+      : sessionMode === "stabilize"
+        ? `${studentState.currentSubject}を導入1問＋本題${Math.max(1, questionCount - 1)}問で固めましょう。`
+        : `${studentState.currentSubject}を導入1問＋本題${Math.max(1, questionCount - 1)}問で前に進めましょう。`;
+
+  return {
+    sessionSubject: studentState.currentSubject,
+    sessionMode,
+    introQuestionTopic,
+    mainQuestionTopic: studentState.currentSubject,
+    questionCount,
+    targetUnderstandingGoal,
+    reason,
+    nextActionToday,
+    availableTime: AVAILABLE_TIME,
+  };
 }
 
 export async function loadQuestion() {
@@ -204,18 +270,21 @@ export async function requestReflection({ questionText, explanationText, learner
   });
 }
 
-export function buildCoachScript(studentState) {
+export function buildCoachScript(studentState, dailyQuota) {
+  const nextAction = dailyQuota?.nextActionToday || studentState.nextActionToday;
   if (LANG === "en") {
-    return `Good morning. Let's continue from yesterday. We'll start with ${studentState.currentSubject} today. Right now you are at ${studentState.currentMilestone}. First, let's work on this: ${studentState.nextActionToday}`;
+    return `Good morning. Let's continue from yesterday. We'll start with ${studentState.currentSubject} today. Right now you are at ${studentState.currentMilestone}. First, let's work on this: ${nextAction}`;
   }
-  return `おはようございます。昨日の続きから始めましょう。今日は${studentState.currentSubject}から入ります。いまは ${studentState.currentMilestone} の段階です。まずは ${studentState.nextActionToday}`;
+  return `おはようございます。昨日の続きから始めましょう。今日は${studentState.currentSubject}から入ります。いまは ${studentState.currentMilestone} の段階です。まずは ${nextAction}`;
 }
 
-export function buildSessionIntro(studentState, signals) {
+export function buildSessionIntro(studentState, signals, dailyQuota) {
+  const sessionMode = dailyQuota?.sessionMode || "advance";
+  const questionCount = dailyQuota?.questionCount || signals.dailyTargetCorrect;
   if (LANG === "en") {
-    return `Based on the last session, we'll prioritize ${studentState.currentSubject} today. You are currently at ${studentState.currentMilestone}, so let's begin by aiming for ${signals.dailyTargetCorrect} correct answers today.`;
+    return `Based on the last session, we'll prioritize ${studentState.currentSubject} today. You are currently at ${studentState.currentMilestone}. Today's mode is ${sessionMode}, so we'll work through about ${questionCount} questions with understanding first.`;
   }
-  return `前回の流れを踏まえると、今日は${studentState.currentSubject}を優先します。いまは ${studentState.currentMilestone} の段階なので、まずは今日の目標である ${signals.dailyTargetCorrect} 問正解を取りにいきましょう。`;
+  return `前回の流れを踏まえると、今日は${studentState.currentSubject}を優先します。いまは ${studentState.currentMilestone} の段階です。今日は ${sessionMode === "recovery" ? "立て直し" : sessionMode === "stabilize" ? "定着" : "前進"} を優先して、導入を含めて ${questionCount} 問前後で進めましょう。`;
 }
 
 export function buildTopicMessage(question) {
