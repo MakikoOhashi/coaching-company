@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coach Intervention</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page-shell page-shell--slide">
+      <article class="slide-card">
+        <p class="session-card__label">3. Coach intervention</p>
+        <h2 class="slide-title">After each answer</h2>
+        <div id="resultFeedback" class="answer-feedback"></div>
+        <p id="coachLead" class="session-card__body"></p>
+
+        <div id="reflectionPanel" class="reflection-panel">
+          <div id="reflectionThread" class="reflection-thread"></div>
+          <form id="reflectionForm" class="reflection-form">
+            <label id="reflectionLabel" class="reflection-form__label" for="reflectionInput">短く説明してみてください</label>
+            <input id="reflectionInput" class="reflection-form__input" type="text" autocomplete="off" />
+            <button id="reflectionSubmit" class="session-button" type="submit">送信</button>
+          </form>
+        </div>
+
+        <a id="nextLink" class="session-button slide-link" href="./summary.html" hidden>次へ</a>
+      </article>
+    </main>
+
+    <script type="module">
+      import {
+        buildInitialReflectionPrompt,
+        buildInterventionLead,
+        buildSummaryText,
+        getStore,
+        mergeStore,
+        requestReflection,
+      } from "./session.js";
+
+      const store = getStore();
+      const question = store.currentQuestion;
+      const result = store.lastResult;
+      const studentState = store.studentState;
+      if (!question || !result || !studentState) {
+        window.location.href = "./start.html";
+      }
+
+      mergeStore({ stage: "intervention" });
+
+      const resultFeedback = document.getElementById("resultFeedback");
+      const coachLead = document.getElementById("coachLead");
+      const reflectionThread = document.getElementById("reflectionThread");
+      const reflectionForm = document.getElementById("reflectionForm");
+      const reflectionLabel = document.getElementById("reflectionLabel");
+      const reflectionInput = document.getElementById("reflectionInput");
+      const nextLink = document.getElementById("nextLink");
+
+      const initialPrompt = buildInitialReflectionPrompt(result);
+      const lead = buildInterventionLead(result);
+      let coachTurn = 1;
+      let mode = result.isCorrect ? "correct_check" : "mistake_review";
+
+      resultFeedback.dataset.result = result.isCorrect ? "correct" : "incorrect";
+      resultFeedback.textContent = result.isCorrect
+        ? `Correct. ${result.explanation}`
+        : `Not quite. Correct answer: ${result.correct}. ${result.explanation}`;
+      coachLead.textContent = lead;
+      reflectionThread.innerHTML = `<div class="reflection-bubble" data-role="coach">${initialPrompt}</div>`;
+      reflectionLabel.textContent = result.isCorrect ? "短く説明してみてください" : "どこがずれていたかを一言で整理してください";
+      reflectionInput.placeholder = result.isCorrect
+        ? "例: 先取特権は一定の債権を確保するために優先して回収できる権利"
+        : "例: 賃借人の動産まで及ぶと広く考えすぎた";
+
+      reflectionForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const learnerReflection = reflectionInput.value.trim();
+        if (!learnerReflection) return;
+
+        reflectionThread.insertAdjacentHTML("beforeend", `<div class="reflection-bubble" data-role="user">${learnerReflection}</div>`);
+        const payload = await requestReflection({
+          questionText: question.stem,
+          explanationText: result.explanation,
+          learnerReflection,
+          coachTurn,
+          mode,
+        });
+
+        reflectionThread.insertAdjacentHTML("beforeend", `<div class="reflection-bubble" data-role="coach">${payload.coachMessage}</div>`);
+        mergeStore({
+          summaryText: buildSummaryText(studentState, payload.coachMessage),
+          stage: "summary",
+        });
+
+        reflectionInput.disabled = true;
+        document.getElementById("reflectionSubmit").disabled = true;
+        nextLink.hidden = false;
+      });
+
+      if (!result.isCorrect) {
+        mergeStore({ summaryText: buildSummaryText(studentState) });
+      }
+    </script>
+  </body>
+</html>

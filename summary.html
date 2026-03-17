@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Session Summary</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page-shell page-shell--slide">
+      <article class="slide-card">
+        <p class="session-card__label">4. Session summary</p>
+        <h2 class="slide-title">Close the session</h2>
+        <p id="summaryText" class="session-card__body">読み込み中です...</p>
+        <p class="question-intro">5秒後に次の問題へ進みます。</p>
+        <a class="session-button slide-link" href="./question.html">すぐ進む</a>
+      </article>
+    </main>
+
+    <script type="module">
+      import { getStore, mergeStore } from "./session.js";
+
+      const store = getStore();
+      const summaryText = store.summaryText || "ここまでで次へ進めます。次の問題に進みましょう。";
+      document.getElementById("summaryText").textContent = summaryText;
+      mergeStore({ stage: "summary" });
+
+      window.setTimeout(() => {
+        window.location.href = "./question.html";
+      }, 5000);
+    </script>
+  </body>
+</html>

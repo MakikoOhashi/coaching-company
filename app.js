@@ -6,13 +6,36 @@ const COACH_REPLY_PATH = "/coaching/coach-reply";
 const CURRENT_QUESTION_PATH = "/coaching/company-question";
 const SUBMIT_ANSWER_PATH = "/coaching/company-submit-answer";
 const REFLECTION_REPLY_PATH = "/coaching/company-reflection-coach";
+const SESSION_STAGE_KEY = "coaching-company-stage";
 const APP_ID = params.get("appId") || "wakarumade-ios";
 const GUEST_ID = params.get("guestId") || "coach-dashboard";
 const COMPANY_STUDENT_KEY = params.get("studentKey") || "husband-company";
 
+const heroSection = document.getElementById("heroSection");
+const enterSessionButton = document.getElementById("enterSessionButton");
+const coachPanel = document.getElementById("coachPanel");
+const coachStartStage = document.getElementById("coachStartStage");
+const coachPanelHeader = document.getElementById("coachPanelHeader");
 const refreshButton = document.getElementById("refreshButton");
+const toggleOverviewButton = document.getElementById("toggleOverviewButton");
+const beginSessionButton = document.getElementById("beginSessionButton");
+const showQuestionButton = document.getElementById("showQuestionButton");
+const toggleSignalsButton = document.getElementById("toggleSignalsButton");
+const toggleCoachChatButton = document.getElementById("toggleCoachChatButton");
 const statusMessage = document.getElementById("statusMessage");
 const stateView = document.getElementById("stateView");
+const coachScriptCard = document.getElementById("coachScriptCard");
+const coachActionRow = document.getElementById("coachActionRow");
+const overviewPanel = document.getElementById("overviewPanel");
+const sessionFlowSection = document.getElementById("sessionFlowSection");
+const introCard = document.getElementById("introCard");
+const questionCard = document.getElementById("questionCard");
+const interventionCard = document.getElementById("interventionCard");
+const interventionFeedback = document.getElementById("interventionFeedback");
+const summaryCard = document.getElementById("summaryCard");
+const postSessionActions = document.getElementById("postSessionActions");
+const signalsSection = document.getElementById("signalsSection");
+const coachChatSection = document.getElementById("coachChatSection");
 const coachForm = document.getElementById("coachForm");
 const coachInput = document.getElementById("coachInput");
 const coachSubmit = document.getElementById("coachSubmit");
@@ -32,6 +55,7 @@ const chatHistory = [];
 let currentQuestion = null;
 let selectedChoice = null;
 let autoAdvanceTimer = null;
+let currentStage = "hero";
 let reflectionState = {
   active: false,
   coachTurn: 0,
@@ -63,8 +87,24 @@ const textTargets = {
 };
 
 function setStatus(message, state = "idle") {
+  if (state === "idle") {
+    statusMessage.hidden = true;
+    statusMessage.textContent = "";
+    statusMessage.dataset.state = state;
+    return;
+  }
   statusMessage.textContent = message;
   statusMessage.dataset.state = state;
+  statusMessage.hidden = false;
+}
+
+function persistStage(stage) {
+  currentStage = stage;
+  window.sessionStorage.setItem(SESSION_STAGE_KEY, stage);
+}
+
+function readPersistedStage() {
+  return window.sessionStorage.getItem(SESSION_STAGE_KEY) || "hero";
 }
 
 function writeText(id, value) {
@@ -74,11 +114,10 @@ function writeText(id, value) {
 
 function buildCoachScript(studentState, signals) {
   return [
-    `Good morning. Based on your current status, your focus is ${studentState.currentSubject}.`,
-    `You are currently at: ${studentState.currentMilestone}.`,
-    `Your current pass probability is ${studentState.passProbability} percent, and your risk level is ${studentState.riskLevel}.`,
-    `Today, I want you to do this: ${studentState.nextActionToday}`,
-    `Right now you have answered ${signals.totalAnswered} questions in total and your current streak is ${signals.streakCount} days.`,
+    `おはようございます。昨日の続きから始めましょう。`,
+    `今日は${studentState.currentSubject}から入ります。`,
+    `いまは ${studentState.currentMilestone} の段階です。`,
+    `まずは ${studentState.nextActionToday}`,
   ].join(" ");
 }
 
@@ -184,6 +223,34 @@ function resetReflectionPanel() {
   reflectionSubmit.disabled = false;
   continueDiscussionButton.hidden = true;
   reflectionPanel.hidden = true;
+  interventionFeedback.hidden = true;
+}
+
+function resetSessionStages() {
+  persistStage("coach");
+  coachStartStage.hidden = false;
+  coachPanelHeader.hidden = false;
+  coachScriptCard.hidden = false;
+  coachActionRow.hidden = false;
+  overviewPanel.hidden = true;
+  sessionFlowSection.hidden = true;
+  questionCard.hidden = true;
+  introCard.hidden = false;
+  interventionCard.hidden = true;
+  summaryCard.hidden = true;
+  postSessionActions.hidden = true;
+  signalsSection.hidden = true;
+  coachChatSection.hidden = true;
+  toggleOverviewButton.textContent = "いまの状況を見る";
+  toggleSignalsButton.textContent = "理由を見る";
+  toggleCoachChatButton.textContent = "コーチに聞く";
+}
+
+function showFlowStep(step) {
+  introCard.hidden = step !== "intro";
+  questionCard.hidden = step !== "question";
+  interventionCard.hidden = step !== "intervention";
+  summaryCard.hidden = step !== "summary";
 }
 
 function appendReflectionMessage(role, text) {
@@ -204,6 +271,7 @@ function openReflectionPanel(initialCoachMessage, explanationText) {
     mode: isCorrectCheck ? "correct_check" : "mistake_review",
   };
   reflectionThread.innerHTML = "";
+  writeText("coachIntervention", isCorrectCheck ? "ここを短く言葉にしてから次へ進みましょう。" : "ここは一度整理してから次に進みましょう。");
   appendReflectionMessage("coach", initialCoachMessage);
   reflectionInput.value = "";
   reflectionInput.disabled = false;
@@ -227,10 +295,69 @@ function scheduleAutoAdvance() {
   }, 5000);
 }
 
+function toggleOverviewPanelVisibility() {
+  overviewPanel.hidden = !overviewPanel.hidden;
+  toggleOverviewButton.textContent = overviewPanel.hidden ? "いまの状況を見る" : "いまの状況を閉じる";
+}
+
+function beginSessionFlow() {
+  persistStage("intro");
+  sessionFlowSection.hidden = false;
+  postSessionActions.hidden = true;
+  showFlowStep("intro");
+  coachStartStage.hidden = true;
+}
+
+function showQuestionStage() {
+  persistStage("question");
+  sessionFlowSection.hidden = false;
+  showFlowStep("question");
+}
+
+function showInterventionStage() {
+  persistStage("intervention");
+  sessionFlowSection.hidden = false;
+  showFlowStep("intervention");
+}
+
+function showSummaryStage() {
+  persistStage("summary");
+  sessionFlowSection.hidden = false;
+  showFlowStep("summary");
+  postSessionActions.hidden = false;
+}
+
+function restoreStageAfterLoad() {
+  const savedStage = readPersistedStage();
+
+  if (savedStage === "hero") {
+    heroSection.hidden = false;
+    coachPanel.hidden = true;
+    return;
+  }
+
+  heroSection.hidden = true;
+  coachPanel.hidden = false;
+
+  if (savedStage === "coach") {
+    resetSessionStages();
+    return;
+  }
+
+  if (savedStage === "intro") {
+    beginSessionFlow();
+    return;
+  }
+
+  beginSessionFlow();
+  showQuestionStage();
+}
+
 function renderQuestion(question) {
   currentQuestion = question;
   selectedChoice = null;
   clearAnswerFeedback();
+  resetReflectionPanel();
   writeText("questionTopic", `導入問題 / ${question.subject}`);
   writeText("questionIntro", "まずは前回つまずいた論点を1問だけ確認します。このあと今日の本題に入ります。");
   writeText("questionStem", question.stem);
@@ -278,6 +405,19 @@ function renderStudentState(payload) {
   writeText("sessionSummary", buildSessionSummary(studentState, signals));
 
   stateView.hidden = false;
+  statusMessage.hidden = true;
+}
+
+function toggleSection(section, trigger) {
+  const nextHidden = !section.hidden;
+  section.hidden = nextHidden;
+  trigger.textContent = section.hidden
+    ? trigger.id === "toggleSignalsButton"
+      ? "理由を見る"
+      : "コーチに聞く"
+    : trigger.id === "toggleSignalsButton"
+      ? "理由を閉じる"
+      : "質問窓口を閉じる";
 }
 
 async function fetchCoachReply(message) {
@@ -368,6 +508,7 @@ async function requestReflectionCoach(learnerReflection) {
 
 async function loadStudentState() {
   refreshButton.disabled = true;
+  resetSessionStages();
   setStatus("Loading the learner state from common-ai-api...");
 
   try {
@@ -390,6 +531,7 @@ async function loadStudentState() {
     renderStudentState(payload);
     const questionPayload = await fetchCurrentQuestion();
     renderQuestion(questionPayload.question);
+    restoreStageAfterLoad();
     setStatus(`Learner state loaded successfully. Updated at ${new Date(payload.studentState.updatedAt).toLocaleString()}.`);
   } catch (error) {
     stateView.hidden = true;
@@ -413,6 +555,10 @@ async function handleAnswerSubmit() {
       ? `Correct. ${payload.result.explanation}`
       : `Not quite. Correct answer: ${payload.result.correct}. ${payload.result.explanation}`;
     const interventionMessage = buildAnswerIntervention(currentQuestion, payload.result);
+    showInterventionStage();
+    interventionFeedback.hidden = false;
+    interventionFeedback.dataset.result = payload.result.isCorrect ? "correct" : "incorrect";
+    interventionFeedback.textContent = answerFeedback.textContent;
     writeText("coachIntervention", payload.result.isCorrect ? interventionMessage : "誤答を整理してから次に進みましょう。");
     writeText(
       "sessionSummary",
@@ -423,6 +569,8 @@ async function handleAnswerSubmit() {
       openReflectionPanel(interventionMessage, payload.result.explanation);
     } else {
       resetReflectionPanel();
+      showSummaryStage();
+      scheduleAutoAdvance();
     }
     setStatus("Answer checked.");
   } catch (error) {
@@ -443,6 +591,7 @@ async function handleNextQuestion() {
     const payload = await fetchCurrentQuestion();
     resetReflectionPanel();
     renderQuestion(payload.question);
+    showQuestionStage();
     setStatus("Next question loaded.");
   } catch (error) {
     setStatus(error instanceof Error ? error.message : "Failed to load next question.", "error");
@@ -464,7 +613,10 @@ async function handleReflectionSubmit(event) {
   try {
     const payload = await requestReflectionCoach(learnerReflection);
     appendReflectionMessage("coach", payload.coachMessage);
-    writeText("coachIntervention", payload.coachMessage);
+    writeText(
+      "sessionSummary",
+      `${payload.coachMessage} この確認を踏まえて、次も${textTargets.currentSubject.textContent}を続けて確認しましょう。`,
+    );
     reflectionInput.value = "";
 
     const reachedEnd =
@@ -476,6 +628,7 @@ async function handleReflectionSubmit(event) {
       reflectionSubmit.disabled = true;
       reflectionInput.placeholder = "ここまでで次へ進めます。必要なら Next を押してください。";
       reflectionState.active = false;
+      showSummaryStage();
       scheduleAutoAdvance();
     } else {
       reflectionState.coachTurn += 1;
@@ -524,8 +677,17 @@ function handleContinueDiscussion() {
     autoAdvanceTimer = null;
   }
   continueDiscussionButton.hidden = true;
+  coachChatSection.hidden = false;
+  toggleCoachChatButton.textContent = "質問窓口を閉じる";
   coachInput.focus();
   setStatus("この論点について質問を続けられます。");
+}
+
+function handleEnterSession() {
+  persistStage("coach");
+  heroSection.hidden = true;
+  coachPanel.hidden = false;
+  coachPanelHeader.hidden = true;
 }
 
 refreshButton.addEventListener("click", loadStudentState);
@@ -534,5 +696,12 @@ answerButton.addEventListener("click", handleAnswerSubmit);
 nextQuestionButton.addEventListener("click", handleNextQuestion);
 reflectionForm.addEventListener("submit", handleReflectionSubmit);
 continueDiscussionButton.addEventListener("click", handleContinueDiscussion);
+enterSessionButton.addEventListener("click", handleEnterSession);
+toggleOverviewButton.addEventListener("click", toggleOverviewPanelVisibility);
+beginSessionButton.addEventListener("click", beginSessionFlow);
+showQuestionButton.addEventListener("click", showQuestionStage);
+toggleSignalsButton.addEventListener("click", () => toggleSection(signalsSection, toggleSignalsButton));
+toggleCoachChatButton.addEventListener("click", () => toggleSection(coachChatSection, toggleCoachChatButton));
 
+resetSessionStages();
 loadStudentState();

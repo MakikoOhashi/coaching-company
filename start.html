@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>学習セッション開始</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page-shell page-shell--slide">
+      <section class="slide-card">
+        <p class="coach-script__label">担当コーチ</p>
+        <p id="coachScript" class="coach-script__body">読み込み中です...</p>
+
+        <div class="stage-actions">
+          <button id="toggleOverviewButton" class="session-button session-button--ghost" type="button">いまの状況を見る</button>
+          <a class="session-button slide-link" href="./intro.html">はい</a>
+        </div>
+
+        <section id="overviewPanel" class="overview-panel" hidden>
+          <div class="state-grid">
+            <article class="state-card">
+              <p class="state-card__label">今日のテーマ</p>
+              <h3 id="currentSubject">-</h3>
+            </article>
+            <article class="state-card">
+              <p class="state-card__label">いまの到達地点</p>
+              <h3 id="currentMilestone">-</h3>
+            </article>
+            <article class="state-card">
+              <p class="state-card__label">現在のリスク</p>
+              <h3 id="riskLevel">-</h3>
+            </article>
+            <article class="state-card">
+              <p class="state-card__label">合格可能性</p>
+              <h3 id="passProbability">-</h3>
+            </article>
+          </div>
+          <article class="next-action">
+            <p class="next-action__label">今日やること</p>
+            <p id="nextActionToday" class="next-action__body">-</p>
+          </article>
+        </section>
+      </section>
+    </main>
+
+    <script type="module">
+      import { buildCoachScript, getStore, loadStudentState, mergeStore } from "./session.js";
+
+      const coachScript = document.getElementById("coachScript");
+      const overviewPanel = document.getElementById("overviewPanel");
+      const toggleOverviewButton = document.getElementById("toggleOverviewButton");
+
+      toggleOverviewButton.addEventListener("click", () => {
+        overviewPanel.hidden = !overviewPanel.hidden;
+        toggleOverviewButton.textContent = overviewPanel.hidden ? "いまの状況を見る" : "いまの状況を閉じる";
+      });
+
+      const payload = (await loadStudentState()) || getStore();
+      const { studentState } = payload;
+      mergeStore({ stage: "start" });
+
+      coachScript.textContent = buildCoachScript(studentState);
+      document.getElementById("currentSubject").textContent = studentState.currentSubject;
+      document.getElementById("currentMilestone").textContent = studentState.currentMilestone;
+      document.getElementById("riskLevel").textContent = studentState.riskLevel;
+      document.getElementById("passProbability").textContent = `${studentState.passProbability}%`;
+      document.getElementById("nextActionToday").textContent = studentState.nextActionToday;
+    </script>
+  </body>
+</html>

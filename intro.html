@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Session Intro</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page-shell page-shell--slide">
+      <article class="slide-card">
+        <p class="session-card__label">1. Session intro</p>
+        <h2 class="slide-title">Start with context</h2>
+        <p id="sessionIntro" class="session-card__body">読み込み中です...</p>
+        <a class="session-button slide-link" href="./question.html">次へ</a>
+      </article>
+    </main>
+
+    <script type="module">
+      import { buildSessionIntro, getStore, loadStudentState, mergeStore } from "./session.js";
+
+      const stored = getStore();
+      let studentState = stored.studentState;
+      let signals = stored.signals;
+
+      if (!studentState || !signals) {
+        const payload = await loadStudentState();
+        studentState = payload.studentState;
+        signals = payload.signals;
+      }
+
+      mergeStore({ stage: "intro" });
+      document.getElementById("sessionIntro").textContent = buildSessionIntro(studentState, signals);
+    </script>
+  </body>
+</html>

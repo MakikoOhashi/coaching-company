@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -7,186 +7,13 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <main class="page-shell">
-      <section class="hero">
+    <main class="page-shell page-shell--slide">
+      <section class="hero hero--slide">
         <p class="eyebrow">AI-run coaching company</p>
-        <h1>One learner. One AI company. One clear next step.</h1>
-        <p class="hero-copy">
-          The company starts working the moment the learner arrives. It decides what matters now, how risky the current
-          path is, and what should happen next.
-        </p>
-      </section>
-
-      <section class="coach-panel">
-        <div class="coach-panel__header">
-          <div>
-            <p class="panel-label">Coach briefing</p>
-            <h2>Current learner state</h2>
-          </div>
-          <button id="refreshButton" class="refresh-button" type="button">Refresh state</button>
-        </div>
-
-        <div id="statusMessage" class="status-message" role="status" aria-live="polite">
-          Loading the learner state from `common-ai-api`...
-        </div>
-
-        <div id="stateView" class="state-view" hidden>
-          <article class="coach-script">
-            <p class="coach-script__label">Coach says</p>
-            <div id="coachScript" class="coach-script__body"></div>
-          </article>
-
-          <div class="state-grid">
-            <article class="state-card">
-              <p class="state-card__label">Current subject</p>
-              <h3 id="currentSubject">-</h3>
-            </article>
-            <article class="state-card">
-              <p class="state-card__label">Current milestone</p>
-              <h3 id="currentMilestone">-</h3>
-            </article>
-            <article class="state-card">
-              <p class="state-card__label">Risk level</p>
-              <h3 id="riskLevel">-</h3>
-            </article>
-            <article class="state-card">
-              <p class="state-card__label">Pass probability</p>
-              <h3 id="passProbability">-</h3>
-            </article>
-          </div>
-
-          <article class="next-action">
-            <p class="next-action__label">Next action today</p>
-            <p id="nextActionToday" class="next-action__body">-</p>
-          </article>
-
-          <section class="session-flow">
-            <div class="signals__header">
-              <p class="panel-label">Session flow</p>
-              <h3>One study session</h3>
-            </div>
-
-            <div class="session-grid">
-              <article class="session-card">
-                <p class="session-card__label">1. Session intro</p>
-                <h4>Start with context</h4>
-                <p id="sessionIntro" class="session-card__body">-</p>
-                <button class="session-button" type="button">Start session</button>
-              </article>
-
-              <article class="session-card session-card--question">
-                <p class="session-card__label">2. Question panel</p>
-                <h4 id="questionTopic">-</h4>
-                <p id="questionIntro" class="question-intro">-</p>
-                <p id="questionStem" class="question-stem">-</p>
-                <div id="choiceList" class="choice-list" role="group" aria-label="Question choices">
-                  <button class="choice-button" type="button">Loading choice...</button>
-                </div>
-                <div id="answerFeedback" class="answer-feedback" hidden></div>
-                <div class="question-actions">
-                  <button id="answerButton" class="session-button" type="button">Answer</button>
-                  <button id="nextQuestionButton" class="session-button session-button--ghost" type="button">Next</button>
-                </div>
-              </article>
-
-              <article class="session-card">
-                <p class="session-card__label">3. Coach intervention</p>
-                <h4>After each answer</h4>
-                <p id="coachIntervention" class="session-card__body">-</p>
-                <div id="reflectionPanel" class="reflection-panel" hidden>
-                  <div id="reflectionThread" class="reflection-thread" aria-live="polite"></div>
-                  <form id="reflectionForm" class="reflection-form">
-                    <label id="reflectionLabel" class="reflection-form__label" for="reflectionInput">言葉にしてみてください</label>
-                    <input
-                      id="reflectionInput"
-                      name="reflection"
-                      class="reflection-form__input"
-                      type="text"
-                      placeholder="例: 賃借人の動産まで及ぶと広く考えすぎた"
-                      autocomplete="off"
-                    />
-                    <button id="reflectionSubmit" class="session-button" type="submit">送信</button>
-                  </form>
-                  <button id="continueDiscussionButton" class="continue-discussion" type="button" hidden>
-                    ここをもう少し確認する
-                  </button>
-                </div>
-              </article>
-
-              <article class="session-card">
-                <p class="session-card__label">4. Session summary</p>
-                <h4>Close the session</h4>
-                <p id="sessionSummary" class="session-card__body">-</p>
-              </article>
-            </div>
-          </section>
-
-          <section class="signals">
-            <div class="signals__header">
-              <p class="panel-label">Signals</p>
-              <h3>Why the coach is saying this</h3>
-            </div>
-            <dl class="signal-list">
-              <div class="signal-list__item">
-                <dt>Block progress</dt>
-                <dd id="blockProgress">-</dd>
-              </div>
-              <div class="signal-list__item">
-                <dt>Block accuracy</dt>
-                <dd id="blockAccuracyRate">-</dd>
-              </div>
-              <div class="signal-list__item">
-                <dt>Total answered</dt>
-                <dd id="totalAnswered">-</dd>
-              </div>
-              <div class="signal-list__item">
-                <dt>Streak count</dt>
-                <dd id="streakCount">-</dd>
-              </div>
-              <div class="signal-list__item">
-                <dt>Daily target</dt>
-                <dd id="dailyTargetCorrect">-</dd>
-              </div>
-              <div class="signal-list__item">
-                <dt>Remaining today</dt>
-                <dd id="todayRemainingToTarget">-</dd>
-              </div>
-              <div class="signal-list__item">
-                <dt>Basic remaining</dt>
-                <dd id="basicRemainingQuestions">-</dd>
-              </div>
-              <div class="signal-list__item">
-                <dt>Estimated days to clear basic</dt>
-                <dd id="basicEtaDays">-</dd>
-              </div>
-            </dl>
-          </section>
-
-          <section class="coach-chat">
-            <div class="signals__header">
-              <p class="panel-label">Coach conversation</p>
-              <h3>Talk to the coach</h3>
-            </div>
-            <div id="chatMessages" class="chat-messages" aria-live="polite"></div>
-            <form id="coachForm" class="coach-form">
-              <label class="coach-form__label" for="coachInput">Message the coach</label>
-              <div class="coach-form__row">
-                <input
-                  id="coachInput"
-                  name="message"
-                  class="coach-form__input"
-                  type="text"
-                  placeholder="今日何やる？ / 今の状況を教えて"
-                  autocomplete="off"
-                />
-                <button id="coachSubmit" class="refresh-button" type="submit">Send</button>
-              </div>
-            </form>
-          </section>
-        </div>
+        <h1>合格まで、今日やることはもう決まっています。</h1>
+        <p class="hero-copy">AIコーチングカンパニーが、今日の学習内容と進み方を運営します。</p>
+        <a class="refresh-button hero-button slide-link" href="./start.html">始める</a>
       </section>
     </main>
-
-    <script type="module" src="./app.js"></script>
   </body>
 </html>
