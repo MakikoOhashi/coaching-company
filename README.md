@@ -54,6 +54,38 @@ The current implementation direction is:
 
 The repository stores the design and implementation source of this system, but is not itself deployed directly to Airia as a whole.
 
+## Current Company Roles
+
+The current demo already behaves like a small operating company, not just a single tutor.
+
+- `Learner-facing Coach`
+  runs the study session, asks the learner to explain mistakes, and keeps the session moving
+- `Daily Review`
+  checks whether today's plan still makes sense based on current learner state and recent performance
+- `CEO Escalation Review`
+  handles cases where the coach should no longer decide the next step alone
+- `Monthly Strategy Review`
+  checks whether the learner's overall direction, pacing, and subject balance are still sound
+- `Company Review Screen`
+  shows the company-side decision layer behind the product
+
+Together, these roles make the company visible as an operating layer behind the learner experience.
+
+## Future Company Roles
+
+The hackathon version focuses on the CEO and review layer first.
+
+The broader company design still includes additional internal roles that can be added later:
+
+- `Marketing`
+  learner engagement, retention strategy, and communication experiments
+- `Back Office`
+  scheduling, reporting, and human escalation operations
+- `Data / Improvement`
+  coach-quality review, intervention analysis, and prompt or workflow iteration
+
+These roles are not the current implementation priority, but they are part of the intended company expansion.
+
 ## Documentation
 
 - [Vision](docs/vision.md)

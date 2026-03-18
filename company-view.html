@@ -15,6 +15,32 @@
 
         <div id="companyStatus" class="status-message">読み込み中です...</div>
 
+        <section class="company-panel company-panel--wide" id="companyOrg" hidden>
+          <h2 id="companyOrgTitle" class="company-panel__title"></h2>
+          <div class="company-org-grid">
+            <article class="company-org-card">
+              <p id="companyRoleCeo" class="company-org-card__role"></p>
+              <p id="companyRoleCeoBody" class="company-org-card__body"></p>
+            </article>
+            <article class="company-org-card">
+              <p id="companyRoleCoachA" class="company-org-card__role"></p>
+              <p id="companyRoleCoachABody" class="company-org-card__body"></p>
+            </article>
+            <article class="company-org-card">
+              <p id="companyRoleCoachB" class="company-org-card__role"></p>
+              <p id="companyRoleCoachBBody" class="company-org-card__body"></p>
+            </article>
+            <article class="company-org-card">
+              <p id="companyRoleQueue" class="company-org-card__role"></p>
+              <p id="companyRoleQueueBody" class="company-org-card__body"></p>
+            </article>
+            <article class="company-org-card company-org-card--summary">
+              <p id="companyRoleSummary" class="company-org-card__role"></p>
+              <p id="companyRoleSummaryBody" class="company-org-card__body"></p>
+            </article>
+          </div>
+        </section>
+
         <div class="company-view__grid" id="companyGrid" hidden>
           <section class="company-panel">
             <h2 id="companySnapshotTitle" class="company-panel__title"></h2>
@@ -86,9 +112,11 @@
 
       const statusEl = document.getElementById("companyStatus");
       const gridEl = document.getElementById("companyGrid");
+      const orgEl = document.getElementById("companyOrg");
 
       document.getElementById("companyViewTitle").textContent = t("companyViewTitle");
       document.getElementById("companyViewIntro").textContent = t("companyViewIntro");
+      document.getElementById("companyOrgTitle").textContent = t("companyOrgTitle");
       document.getElementById("companySnapshotTitle").textContent = t("companySnapshot");
       document.getElementById("companyViewTitleDecision").textContent = t("companyDecision");
       document.getElementById("companyThemeLabel").textContent = t("currentTheme");
@@ -103,6 +131,15 @@
       document.getElementById("companyRefresh").textContent = t("companyRefresh");
       document.getElementById("companyBack").textContent = t("companyBack");
       document.getElementById("companyBack").href = withLang("./start.html");
+      document.getElementById("companyRoleCeo").textContent = t("companyRoleCeo");
+      document.getElementById("companyRoleCoachA").textContent = t("companyRoleCoachA");
+      document.getElementById("companyRoleCoachB").textContent = t("companyRoleCoachB");
+      document.getElementById("companyRoleQueue").textContent = t("companyRoleQueue");
+      document.getElementById("companyRoleSummary").textContent = t("companyRoleSummary");
+      document.getElementById("companyRoleCeoBody").textContent = t("companyOrgCeoBody");
+      document.getElementById("companyRoleCoachABody").textContent = t("companyOrgCoachABody");
+      document.getElementById("companyRoleCoachBBody").textContent = t("companyOrgCoachBBody");
+      document.getElementById("companyRoleQueueBody").textContent = t("companyOrgQueueBody");
 
       function formatDecision(value) {
         if (!value) return "—";
@@ -121,13 +158,17 @@
         document.getElementById("companyReasonValue").textContent = companyReview.decision_reason || "—";
         document.getElementById("companyNextActionValue").textContent = companyReview.updated_next_action || "—";
         document.getElementById("companyNeedsReviewValue").textContent = companyReview.review_needed ? t("companyYes") : t("companyNo");
+        document.getElementById("companyRoleSummaryBody").textContent =
+          `${studentState.currentSubject} / ${formatDecision(companyReview.review_type)} / ${formatDecision(companyReview.decision)}`;
 
         statusEl.hidden = true;
+        orgEl.hidden = false;
         gridEl.hidden = false;
       }
 
       async function refreshView() {
         statusEl.hidden = false;
+        orgEl.hidden = true;
         gridEl.hidden = true;
         statusEl.dataset.state = "";
         statusEl.textContent = t("loading");
