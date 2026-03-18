@@ -20,7 +20,7 @@ const TRANSLATION_CACHE_KEY = "coaching-company-translation-cache";
 const COPY = {
   ja: {
     topTitle: "合格まで、今日やることはもう決まっています。",
-    topCopy: "AIコーチングカンパニーが、今日の学習内容と進み方を運営します。",
+    topCopy: "今日の状態に合わせて、最初の1問から進めます。",
     startButton: "始める",
     coachLabel: "担当コーチ",
     viewState: "いまの状況を見る",
