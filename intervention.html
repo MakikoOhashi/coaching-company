@@ -9,20 +9,22 @@
   <body>
     <main class="page-shell page-shell--slide">
       <article class="slide-card">
-        <h2 id="interventionTitle" class="slide-title"></h2>
-        <div id="questionRecall" class="question-recall" hidden>
-          <p id="questionRecallLabel" class="question-recall__label"></p>
-          <p id="questionRecallStem" class="question-recall__stem"></p>
-          <p id="questionRecallChoice" class="question-recall__choice"></p>
-        </div>
-        <div id="resultFeedback" class="answer-feedback"></div>
-        <div id="reflectionThread" class="reflection-thread"></div>
+        <div class="slide-scroll slide-scroll--intervention">
+          <h2 id="interventionTitle" class="slide-title"></h2>
+          <div id="questionRecall" class="question-recall" hidden>
+            <p id="questionRecallLabel" class="question-recall__label"></p>
+            <p id="questionRecallStem" class="question-recall__stem"></p>
+            <p id="questionRecallChoice" class="question-recall__choice"></p>
+          </div>
+          <div id="resultFeedback" class="answer-feedback"></div>
+          <div id="reflectionThread" class="reflection-thread"></div>
 
-        <form id="reflectionForm" class="reflection-form">
-          <label id="reflectionLabel" class="reflection-form__label" for="reflectionInput"></label>
-          <input id="reflectionInput" class="reflection-form__input" type="text" autocomplete="off" />
-          <button id="reflectionSubmit" class="session-button" type="submit"></button>
-        </form>
+          <form id="reflectionForm" class="reflection-form">
+            <label id="reflectionLabel" class="reflection-form__label" for="reflectionInput"></label>
+            <input id="reflectionInput" class="reflection-form__input" type="text" autocomplete="off" />
+            <button id="reflectionSubmit" class="session-button" type="submit"></button>
+          </form>
+        </div>
 
         <div id="postReflectionActions" class="stage-actions" hidden>
           <button id="continueReflectionButton" class="session-button session-button--ghost" type="button"></button>

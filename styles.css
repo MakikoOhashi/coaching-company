@@ -90,6 +90,35 @@ body {
   animation: riseIn 460ms ease both;
 }
 
+.slide-scroll {
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.slide-scroll--question {
+  flex: 1 1 auto;
+  display: grid;
+  align-content: start;
+  gap: 16px;
+}
+
+.slide-scroll--intervention {
+  flex: 1 1 auto;
+  display: grid;
+  align-content: start;
+  gap: 14px;
+}
+
+.slide-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.slide-scroll::-webkit-scrollbar-thumb {
+  background: rgba(108, 100, 88, 0.22);
+  border-radius: 999px;
+}
+
 .slide-title {
   margin: 0;
   font-size: clamp(1.5rem, 3vw, 2.1rem);
