@@ -51,6 +51,32 @@ body {
   backdrop-filter: blur(10px);
 }
 
+.admin-link {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 30;
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(108, 100, 88, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 254, 250, 0.88);
+  backdrop-filter: blur(10px);
+  color: var(--muted);
+  text-decoration: none;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.admin-link:hover {
+  color: var(--ink);
+  border-color: rgba(108, 100, 88, 0.24);
+}
+
 .lang-toggle__link {
   min-width: 40px;
   padding: 7px 10px;
@@ -704,5 +730,78 @@ body {
 
   .stage-actions {
     flex-direction: column;
+  }
+}
+
+.company-view {
+  width: min(860px, 100%);
+  min-height: min(82vh, 820px);
+  display: grid;
+  gap: 18px;
+  align-content: start;
+}
+
+.company-view__intro {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.8;
+  max-width: 60ch;
+}
+
+.company-view__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.company-panel {
+  padding: 22px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  display: grid;
+  gap: 14px;
+}
+
+.company-panel__title {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.company-panel__list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.company-panel__row {
+  display: grid;
+  gap: 6px;
+}
+
+.company-panel__row dt {
+  margin: 0;
+  color: var(--muted);
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.company-panel__row dd {
+  margin: 0;
+  line-height: 1.7;
+}
+
+.company-view__actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 760px) {
+  .company-view__grid {
+    grid-template-columns: 1fr;
   }
 }

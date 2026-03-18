@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Company View</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="page-shell page-shell--slide">
+      <section class="slide-card company-view">
+        <p class="eyebrow">Behind the scenes</p>
+        <h1 id="companyViewTitle" class="slide-title"></h1>
+        <p id="companyViewIntro" class="company-view__intro"></p>
+
+        <div id="companyStatus" class="status-message">読み込み中です...</div>
+
+        <div class="company-view__grid" id="companyGrid" hidden>
+          <section class="company-panel">
+            <h2 id="companySnapshotTitle" class="company-panel__title"></h2>
+            <dl class="company-panel__list">
+              <div class="company-panel__row">
+                <dt id="companyThemeLabel"></dt>
+                <dd id="companyThemeValue"></dd>
+              </div>
+              <div class="company-panel__row">
+                <dt id="companyMilestoneLabel"></dt>
+                <dd id="companyMilestoneValue"></dd>
+              </div>
+              <div class="company-panel__row">
+                <dt id="companyRiskLabel"></dt>
+                <dd id="companyRiskValue"></dd>
+              </div>
+              <div class="company-panel__row">
+                <dt id="companyPassLabel"></dt>
+                <dd id="companyPassValue"></dd>
+              </div>
+            </dl>
+          </section>
+
+          <section class="company-panel">
+            <h2 id="companyViewTitleDecision" class="company-panel__title"></h2>
+            <dl class="company-panel__list">
+              <div class="company-panel__row">
+                <dt id="companyReviewTypeLabel"></dt>
+                <dd id="companyReviewTypeValue"></dd>
+              </div>
+              <div class="company-panel__row">
+                <dt id="companyDecisionLabel"></dt>
+                <dd id="companyDecisionValue"></dd>
+              </div>
+              <div class="company-panel__row">
+                <dt id="companyReasonLabel"></dt>
+                <dd id="companyReasonValue"></dd>
+              </div>
+              <div class="company-panel__row">
+                <dt id="companyNextActionLabel"></dt>
+                <dd id="companyNextActionValue"></dd>
+              </div>
+              <div class="company-panel__row">
+                <dt id="companyNeedsReviewLabel"></dt>
+                <dd id="companyNeedsReviewValue"></dd>
+              </div>
+            </dl>
+          </section>
+        </div>
+
+        <div class="company-view__actions">
+          <button id="companyRefresh" class="refresh-button" type="button"></button>
+          <a id="companyBack" class="session-button slide-link" href="./start.html"></a>
+        </div>
+      </section>
+    </main>
+
+    <script type="module">
+      import {
+        loadCompanyReview,
+        loadStudentState,
+        mountLanguageToggle,
+        t,
+        withLang,
+      } from "./session.js";
+
+      mountLanguageToggle();
+      document.documentElement.lang = new URLSearchParams(window.location.search).get("lang") || "ja";
+
+      const statusEl = document.getElementById("companyStatus");
+      const gridEl = document.getElementById("companyGrid");
+
+      document.getElementById("companyViewTitle").textContent = t("companyViewTitle");
+      document.getElementById("companyViewIntro").textContent = t("companyViewIntro");
+      document.getElementById("companySnapshotTitle").textContent = t("companySnapshot");
+      document.getElementById("companyViewTitleDecision").textContent = t("companyDecision");
+      document.getElementById("companyThemeLabel").textContent = t("currentTheme");
+      document.getElementById("companyMilestoneLabel").textContent = t("currentMilestoneLabel");
+      document.getElementById("companyRiskLabel").textContent = t("currentRisk");
+      document.getElementById("companyPassLabel").textContent = t("passChance");
+      document.getElementById("companyReviewTypeLabel").textContent = t("companyReviewType");
+      document.getElementById("companyDecisionLabel").textContent = t("companyDecision");
+      document.getElementById("companyReasonLabel").textContent = t("companyReason");
+      document.getElementById("companyNextActionLabel").textContent = t("companyNextAction");
+      document.getElementById("companyNeedsReviewLabel").textContent = t("companyNeedsReview");
+      document.getElementById("companyRefresh").textContent = t("companyRefresh");
+      document.getElementById("companyBack").textContent = t("companyBack");
+      document.getElementById("companyBack").href = withLang("./start.html");
+
+      function formatDecision(value) {
+        if (!value) return "—";
+        return String(value).replaceAll("_", " ");
+      }
+
+      function renderView(studentState, companyReview) {
+        document.getElementById("companyThemeValue").textContent = studentState.currentSubject || "—";
+        document.getElementById("companyMilestoneValue").textContent = studentState.currentMilestone || "—";
+        document.getElementById("companyRiskValue").textContent = studentState.riskLevel || "—";
+        document.getElementById("companyPassValue").textContent =
+          studentState.passProbability != null ? `${studentState.passProbability}%` : "—";
+
+        document.getElementById("companyReviewTypeValue").textContent = formatDecision(companyReview.review_type);
+        document.getElementById("companyDecisionValue").textContent = formatDecision(companyReview.decision);
+        document.getElementById("companyReasonValue").textContent = companyReview.decision_reason || "—";
+        document.getElementById("companyNextActionValue").textContent = companyReview.updated_next_action || "—";
+        document.getElementById("companyNeedsReviewValue").textContent = companyReview.review_needed ? t("companyYes") : t("companyNo");
+
+        statusEl.hidden = true;
+        gridEl.hidden = false;
+      }
+
+      async function refreshView() {
+        statusEl.hidden = false;
+        gridEl.hidden = true;
+        statusEl.dataset.state = "";
+        statusEl.textContent = t("loading");
+
+        try {
+          const { studentState, signals, dailyQuota } = await loadStudentState();
+          const companyReview = await loadCompanyReview(studentState, signals, dailyQuota);
+          renderView(studentState, companyReview);
+        } catch (error) {
+          statusEl.hidden = false;
+          statusEl.dataset.state = "error";
+          statusEl.textContent = error.message || "Failed to load company view.";
+        }
+      }
+
+      document.getElementById("companyRefresh").addEventListener("click", refreshView);
+      refreshView();
+    </script>
+  </body>
+</html>

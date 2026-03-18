@@ -13,6 +13,7 @@ const CURRENT_QUESTION_PATH = "/coaching/company-question";
 const SUBMIT_ANSWER_PATH = "/coaching/company-submit-answer";
 const REFLECTION_REPLY_PATH = "/coaching/company-reflection-coach";
 const TRANSLATE_PATH = "/coaching/translate";
+const COMPANY_REVIEW_PATH = "/coaching/company-review";
 
 const STORAGE_KEY = "coaching-company-session";
 const TRANSLATION_CACHE_KEY = "coaching-company-translation-cache";
@@ -22,6 +23,7 @@ const COPY = {
     topTitle: "合格まで、今日やることはもう決まっています。",
     topCopy: "今日の状態に合わせて、最初の1問から進めます。",
     startButton: "始める",
+    adminEntry: "管理",
     coachLabel: "担当コーチ",
     viewState: "いまの状況を見る",
     hideState: "いまの状況を閉じる",
@@ -54,11 +56,24 @@ const COPY = {
     autoAdvance: (seconds) => `${seconds}秒後に次の問題へ進みます。`,
     skipAhead: "すぐ進む",
     loading: "読み込み中です...",
+    companyViewTitle: "会社の判断",
+    companyViewIntro: "この学習セッションの裏側で、会社がいま何を見ているかを表示します。",
+    companySnapshot: "現在の学習状態",
+    companyReviewType: "レビュー種別",
+    companyDecision: "判断",
+    companyReason: "判断理由",
+    companyNextAction: "会社からの次アクション",
+    companyNeedsReview: "人間確認",
+    companyRefresh: "更新する",
+    companyBack: "学習画面へ戻る",
+    companyNo: "不要",
+    companyYes: "必要",
   },
   en: {
     topTitle: "Your plan to pass is already set for today.",
     topCopy: "The AI coaching company manages what to study today and how to move through it.",
     startButton: "Start",
+    adminEntry: "Admin",
     coachLabel: "Your coach",
     viewState: "See current status",
     hideState: "Hide current status",
@@ -91,6 +106,18 @@ const COPY = {
     autoAdvance: (seconds) => `Moving to the next question in ${seconds} seconds.`,
     skipAhead: "Move now",
     loading: "Loading...",
+    companyViewTitle: "Company View",
+    companyViewIntro: "This shows what the company is looking at behind the learning session.",
+    companySnapshot: "Current learner state",
+    companyReviewType: "Review type",
+    companyDecision: "Decision",
+    companyReason: "Decision reason",
+    companyNextAction: "Next action from company",
+    companyNeedsReview: "Human review",
+    companyRefresh: "Refresh",
+    companyBack: "Back to learning",
+    companyNo: "Not needed",
+    companyYes: "Needed",
   },
 };
 
@@ -211,6 +238,38 @@ export async function loadStudentState() {
     dailyQuota,
   });
   return { ...payload, dailyQuota };
+}
+
+export async function loadCompanyReview(studentState, signals, dailyQuota) {
+  const reviewCase = {
+    student_state: {
+      current_subject: studentState.currentSubject,
+      current_milestone: studentState.currentMilestone,
+      risk_level: studentState.riskLevel,
+      pass_probability: studentState.passProbability,
+      next_action_today: dailyQuota?.nextActionToday || studentState.nextActionToday,
+    },
+    risk_level: studentState.riskLevel,
+    pass_probability: studentState.passProbability,
+    recent_wrong_topic: signals?.focusTopic || studentState.currentSubject,
+    recent_follow_up_summary:
+      signals?.recommendedFocus
+        ? `${signals.recommendedFocus} に注意しながら進めています。`
+        : `${studentState.currentSubject} の理解状況を継続確認しています。`,
+    daily_quota: {
+      session_mode: dailyQuota?.sessionMode || "advance",
+      question_count: dailyQuota?.questionCount || signals?.dailyTargetCorrect || 2,
+    },
+    review_reason: "daily_review",
+  };
+
+  const payload = await postJson(COMPANY_REVIEW_PATH, {
+    studentKey: COMPANY_STUDENT_KEY,
+    reviewCase,
+  });
+
+  mergeStore({ companyReview: payload.companyReview });
+  return payload.companyReview;
 }
 
 export function deriveDailyQuota(studentState, signals, store = {}) {
