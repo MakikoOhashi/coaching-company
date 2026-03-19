@@ -17,6 +17,37 @@
 
         <div id="companyOps" class="company-ops" hidden>
           <section class="company-panel company-panel--wide">
+            <h2 id="companyLoopTitle" class="company-panel__title"></h2>
+            <div class="company-loop">
+              <div class="company-loop__node company-loop__node--ceo is-active">
+                <p class="company-loop__node-title">CEO</p>
+              </div>
+              <div class="company-loop__arrow company-loop__arrow--down">
+                <span id="companyLoopPolicyLabel"></span>
+              </div>
+              <div class="company-loop__node company-loop__node--coach">
+                <p class="company-loop__node-title">Coach A</p>
+              </div>
+              <div class="company-loop__arrow company-loop__arrow--down">
+                <span id="companyLoopExecutionLabel"></span>
+              </div>
+              <div class="company-loop__node company-loop__node--system">
+                <p class="company-loop__node-title">System</p>
+              </div>
+              <div class="company-loop__arrow company-loop__arrow--curve">
+                <span id="companyLoopEvaluationLabel"></span>
+              </div>
+              <div class="company-loop__return">
+                <span id="companyLoopRedecisionLabel"></span>
+              </div>
+            </div>
+            <div class="company-loop__status">
+              <span class="company-loop__status-label" id="companyLoopStatusLabel"></span>
+              <span class="company-loop__status-value" id="companyLoopStatusValue"></span>
+            </div>
+          </section>
+
+          <section class="company-panel company-panel--wide">
             <h2 id="companyMissionTitle" class="company-panel__title"></h2>
             <div class="company-mission">
               <article class="company-metric">
@@ -96,6 +127,20 @@
           </div>
 
           <section class="company-panel company-panel--wide">
+            <h2 id="companyAdaptationTitle" class="company-panel__title"></h2>
+            <dl class="company-panel__list">
+              <div class="company-panel__row">
+                <dt id="companyAdaptationReasonLabel"></dt>
+                <dd id="companyAdaptationReasonValue"></dd>
+              </div>
+              <div class="company-panel__row">
+                <dt id="companyConclusionLabel"></dt>
+                <dd id="companyConclusionValue"></dd>
+              </div>
+            </dl>
+          </section>
+
+          <section class="company-panel company-panel--wide">
             <h2 id="companyNextMoveTitle" class="company-panel__title"></h2>
             <dl class="company-panel__list">
               <div class="company-panel__row">
@@ -134,10 +179,18 @@
 
       document.getElementById("companyViewTitle").textContent = t("companyViewTitle");
       document.getElementById("companyViewIntro").textContent = t("companyViewIntro");
+      document.getElementById("companyLoopTitle").textContent = t("companyLoopTitle");
       document.getElementById("companyMissionTitle").textContent = t("companyMissionTitle");
       document.getElementById("companyFeedTitle").textContent = t("companyFeedTitle");
       document.getElementById("companyDecisionBreakdownTitle").textContent = t("companyDecisionBreakdownTitle");
+      document.getElementById("companyAdaptationTitle").textContent = t("companyAdaptationTitle");
       document.getElementById("companyNextMoveTitle").textContent = t("companyNextMoveTitle");
+
+      document.getElementById("companyLoopPolicyLabel").textContent = t("companyLoopPolicy");
+      document.getElementById("companyLoopExecutionLabel").textContent = t("companyLoopExecution");
+      document.getElementById("companyLoopEvaluationLabel").textContent = t("companyLoopEvaluation");
+      document.getElementById("companyLoopRedecisionLabel").textContent = t("companyLoopRedecision");
+      document.getElementById("companyLoopStatusLabel").textContent = t("companyLoopStatus");
 
       document.getElementById("companyThemeLabel").textContent = t("currentTheme");
       document.getElementById("companyMissionModeLabel").textContent = t("companyMissionMode");
@@ -150,6 +203,7 @@
       document.getElementById("companyDecisionLabel").textContent = t("companyDecision");
       document.getElementById("companyReasonLabel").textContent = t("companyReason");
       document.getElementById("companyConclusionLabel").textContent = t("companyConclusion");
+      document.getElementById("companyAdaptationReasonLabel").textContent = t("companyAdaptationReason");
       document.getElementById("companyNextActionLabel").textContent = t("companyNextAction");
       document.getElementById("companyNeedsReviewLabel").textContent = t("companyNeedsReview");
 
@@ -204,6 +258,8 @@
         document.getElementById("companyMissionModeValue").textContent = dailyQuota?.sessionMode || "—";
         document.getElementById("companyMissionReviewValue").textContent = formatDecision(companyReview.review_type);
         document.getElementById("companyMissionCaseValue").textContent = studentState.currentMilestone || "—";
+        document.getElementById("companyLoopStatusValue").textContent =
+          companyReview.review_needed ? t("companyImproving") : t("companyStableLoop");
 
         document.getElementById("companyRiskBarValue").textContent = studentState.riskLevel || "—";
         document.getElementById("companyRiskBarFill").style.width = `${riskPercent(studentState.riskLevel)}%`;
@@ -217,6 +273,8 @@
         document.getElementById("companyReasonValue").textContent = companyReview.decision_reason || "—";
         document.getElementById("companyConclusionValue").textContent =
           `${formatDecision(companyReview.decision)} / ${formatDecision(companyReview.review_type)}`;
+        document.getElementById("companyAdaptationReasonValue").textContent =
+          `${t("companyRiskBar")}: ${studentState.riskLevel || "—"} / ${t("companyPassBar")}: ${studentState.passProbability || 0}% / ${t("companyLoadBar")}: ${dailyQuota?.questionCount || 0}Q`;
         document.getElementById("companyNextActionValue").textContent = companyReview.updated_next_action || "—";
         document.getElementById("companyNeedsReviewValue").textContent = companyReview.review_needed ? t("companyYes") : t("companyNo");
 
