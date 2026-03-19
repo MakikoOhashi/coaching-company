@@ -12,6 +12,10 @@
         <p class="eyebrow">Company OS</p>
         <h1 id="companyViewTitle" class="slide-title"></h1>
         <p id="companyViewIntro" class="company-view__intro"></p>
+        <div class="company-now">
+          <p class="company-now__label" id="companyNowLabel"></p>
+          <p class="company-now__body" id="companyNowLine"></p>
+        </div>
 
         <div id="companyStatus" class="status-message">読み込み中です...</div>
 
@@ -35,6 +39,7 @@
                   <article class="command-node command-node--ceo">
                     <p class="command-node__label" id="companyLoopPolicyTitle"></p>
                     <p class="command-node__value" id="companyLoopPolicyBody"></p>
+                    <p class="command-node__meta" id="companyLoopPolicyMeta"></p>
                     <p class="command-node__meta" id="companyLoopStatusValue"></p>
                   </article>
                 </div>
@@ -215,6 +220,8 @@
 
       document.getElementById("companyViewTitle").textContent = t("companyViewTitle");
       document.getElementById("companyViewIntro").textContent = t("companyViewIntro");
+      document.getElementById("companyNowLabel").textContent = t("companyNowLabel");
+      document.getElementById("companyNowLine").textContent = t("companyNowLine");
       document.getElementById("companyCommandTitle").textContent = t("companyCommandTitle");
       document.getElementById("companyHealthTitle").textContent = t("companyHealthTitle");
       document.getElementById("companyDecisionsTitle").textContent = t("companyDecisionsTitle");
@@ -237,6 +244,7 @@
 
       document.getElementById("companyQueueTitle").textContent = t("companyQueueTitle");
       document.getElementById("companyLoopPolicyTitle").textContent = t("companyLoopPolicyTitle");
+      document.getElementById("companyLoopPolicyMeta").textContent = t("companyLoopPolicyMeta");
       document.getElementById("coachALabel").textContent = t("companyCoachALabel");
       document.getElementById("coachBLabel").textContent = t("companyCoachBLabel");
       document.getElementById("coachCLabel").textContent = t("companyCoachCLabel");
@@ -283,7 +291,8 @@
       function renderView(sampleCases) {
         const overview = deriveCompanyOverview(sampleCases);
 
-        document.getElementById("companyHealthStatusValue").textContent = overview.healthStatus;
+        document.getElementById("companyHealthStatusValue").textContent =
+          overview.healthStatus === "WATCH" ? t("companyHealthWatch") : t("companyHealthStable");
         document.getElementById("companyHealthActiveValue").textContent = String(overview.activeCases);
         document.getElementById("companyHealthRiskValue").textContent = String(overview.highRisk);
         document.getElementById("companyHealthEscalationValue").textContent = String(overview.escalations);

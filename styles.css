@@ -752,6 +752,35 @@ body {
   max-width: 60ch;
 }
 
+.company-now {
+  display: grid;
+  gap: 8px;
+  padding: 16px 18px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(43, 111, 87, 0.08), rgba(43, 111, 87, 0.02));
+  border: 1px solid rgba(43, 111, 87, 0.16);
+}
+
+.company-now__label,
+.company-now__body {
+  margin: 0;
+}
+
+.company-now__label {
+  color: var(--accent);
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.company-now__body {
+  font-size: 1.02rem;
+  line-height: 1.65;
+  font-weight: 700;
+}
+
 .company-ops {
   display: grid;
   gap: 18px;
@@ -896,6 +925,10 @@ body {
   line-height: 1.55;
 }
 
+.command-node--ceo .command-node__value {
+  font-size: 1.15rem;
+}
+
 .command-node__badge {
   justify-self: start;
   padding: 7px 10px;
@@ -1028,6 +1061,10 @@ body {
 .company-metric--health {
   background: #edf4ef;
   border: 1px solid rgba(43, 111, 87, 0.16);
+}
+
+.company-metric--health .company-metric__value {
+  color: var(--accent);
 }
 
 .company-metric__label {
