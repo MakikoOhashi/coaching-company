@@ -119,33 +119,16 @@ The broader company design still includes additional internal roles that can be 
 
 These roles are not the current implementation priority, but they are part of the intended company expansion.
 
-## Documentation
+## Key Docs
 
 - [Vision](docs/vision.md)
 - [Product Direction](docs/product-direction.md)
 - [Architecture](docs/architecture.md)
-- [Data Boundary](docs/data-boundary.md)
-- [Product Positioning](docs/product-positioning.md)
-- [Company Onboarding](docs/company-onboarding.md)
-- [Question Strategy](docs/question-strategy.md)
-- [Question Bank Strategy](docs/question-bank-strategy.md)
-- [Coach Decision Spec](docs/coach-decision-spec.md)
-- [Coaching Goal Policy](docs/coaching-goal-policy.md)
-- [Daily Quota Design](docs/daily-quota-design.md)
-- [Coach Growth Data Design](docs/coach-growth-data-design.md)
 - [Airia Company Plan](docs/airia-company-plan.md)
-- [Escalation Boundary](docs/escalation-boundary.md)
 - [CEO Escalation Contract](docs/ceo-escalation-contract.md)
-- [Daily Review Workflow](docs/daily-review-workflow.md)
-- [Intervention Strategy](docs/intervention-strategy.md)
-- [Coaching Schema SQL](docs/coaching-schema.sql)
-- [Coaching Schema Notes](docs/coaching-schema-notes.md)
-- [Minimal DB Design](docs/minimal-db-design.md)
-- [Kanrigyomu Mapping](docs/kanrigyomu-mapping.md)
-- [State Update Model](docs/state-update-model.md)
-- [Workflow](docs/workflow.md)
-- [MVP](docs/mvp.md)
-- [Open Questions](docs/open-questions.md)
+- [Daily Quota Design](docs/daily-quota-design.md)
+
+Additional working documents, internal design notes, and supporting specs are available in [`docs/`](docs/).
 
 ## Current Structure
 
