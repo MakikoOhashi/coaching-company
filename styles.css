@@ -73,14 +73,22 @@ body.body--company {
   backdrop-filter: blur(10px);
   color: var(--muted);
   text-decoration: none;
-  font-family: "Helvetica Neue", Arial, sans-serif;
-  font-size: 1.05rem;
-  font-weight: 700;
 }
 
 .admin-link:hover {
   color: var(--ink);
   border-color: rgba(108, 100, 88, 0.24);
+}
+
+.admin-link__icon {
+  width: 22px;
+  height: 22px;
+  display: block;
+  opacity: 0.72;
+}
+
+.admin-link:hover .admin-link__icon {
+  opacity: 0.96;
 }
 
 .lang-toggle__link {
@@ -1050,6 +1058,17 @@ body.body--company {
 .company-panel__row dd {
   margin: 0;
   line-height: 1.7;
+}
+
+.company-review-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.company-review-actions .session-button[disabled] {
+  opacity: 0.48;
+  cursor: default;
 }
 
 .company-view__actions {

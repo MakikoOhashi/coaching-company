@@ -1,4 +1,4 @@
-# Coaching Company
+# Coaching Company Ops
 
 An AI-run coaching company where every employee is AI.
 
@@ -53,6 +53,14 @@ The current implementation direction is:
   workflow orchestration for CEO, coach, escalation, and review flows
 
 The repository stores the design and implementation source of this system, but is not itself deployed directly to Airia as a whole.
+
+## Airia Agent
+
+Company-side operations agent on Airia:
+
+- [Coaching Company Ops](https://community.airia.ai/import-agent/CUmyXGjL4IrFhDEcjQznpq2epY8nbHSU3qyYLepa2SY)
+
+Community approval is currently pending.
 
 ## Current Company Roles
 

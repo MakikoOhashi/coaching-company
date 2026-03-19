@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Company View</title>
+    <link rel="icon" type="image/svg+xml" href="./urban-building-company-city-apartment-svgrepo-com.svg" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body class="body--company">
@@ -148,6 +149,10 @@
                 <dd id="companyEscalationStatusValue"></dd>
               </div>
             </dl>
+            <div class="company-review-actions">
+              <button id="companyApproveReview" class="session-button session-button--ghost" type="button"></button>
+              <button id="companyReturnReview" class="session-button session-button--ghost" type="button"></button>
+            </div>
           </section>
         </div>
 
@@ -256,6 +261,8 @@
       document.getElementById("companyEscalationCountLabel").textContent = t("companyEscalationCount");
       document.getElementById("companyEscalationReasonLabel").textContent = t("companyEscalationReason");
       document.getElementById("companyEscalationStatusLabel").textContent = t("companyEscalationStatus");
+      document.getElementById("companyApproveReview").textContent = t("companyEscalationApprove");
+      document.getElementById("companyReturnReview").textContent = t("companyEscalationReturn");
 
       document.getElementById("companyRefresh").textContent = t("companyRefresh");
       document.getElementById("companyBack").textContent = t("companyBack");
@@ -288,9 +295,22 @@
         return { activeCases, highRisk, escalations, keepCount, adjustCount, escalateCount, healthStatus, queueDaily, queueMonthly, coaches };
       }
 
+      let reviewState = "waiting";
+
+      function currentNowLine() {
+        if (reviewState === "approved") {
+          return t("companyNowApproved");
+        }
+        if (reviewState === "returned") {
+          return t("companyNowReturned");
+        }
+        return t("companyNowLine");
+      }
+
       function renderView(sampleCases) {
         const overview = deriveCompanyOverview(sampleCases);
 
+        document.getElementById("companyNowLine").textContent = currentNowLine();
         document.getElementById("companyHealthStatusValue").textContent =
           overview.healthStatus === "WATCH" ? t("companyHealthWatch") : t("companyHealthStable");
         document.getElementById("companyHealthActiveValue").textContent = String(overview.activeCases);
@@ -326,7 +346,16 @@
         document.getElementById("companyEscalationReasonValue").textContent =
           overview.escalations > 0 ? t("companyEscalationReasonValue") : t("companyFlowNoEscalation");
         document.getElementById("companyEscalationStatusValue").textContent =
-          overview.escalations > 0 ? t("companyEscalationWaiting") : t("companyFlowNoEscalation");
+          overview.escalations > 0
+            ? reviewState === "approved"
+              ? t("companyEscalationApproved")
+              : reviewState === "returned"
+                ? t("companyEscalationReturned")
+                : t("companyEscalationWaiting")
+            : t("companyFlowNoEscalation");
+
+        document.getElementById("companyApproveReview").disabled = overview.escalations === 0 || reviewState === "approved";
+        document.getElementById("companyReturnReview").disabled = overview.escalations === 0 || reviewState === "returned";
 
         statusEl.hidden = true;
         opsEl.hidden = false;
@@ -348,6 +377,14 @@
       }
 
       document.getElementById("companyRefresh").addEventListener("click", refreshView);
+      document.getElementById("companyApproveReview").addEventListener("click", () => {
+        reviewState = "approved";
+        renderView(SAMPLE_CASES);
+      });
+      document.getElementById("companyReturnReview").addEventListener("click", () => {
+        reviewState = "returned";
+        renderView(SAMPLE_CASES);
+      });
       refreshView();
     </script>
   </body>
