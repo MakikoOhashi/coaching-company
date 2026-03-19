@@ -83,6 +83,10 @@ Company-side operations agent on Airia:
 
 Community approval is currently pending.
 
+## Demo Video
+
+- [YouTube Demo](https://youtu.be/ryLPaiVdb6Y)
+
 ## Current Company Roles
 
 The current demo already behaves like a small operating company, not just a single tutor.
