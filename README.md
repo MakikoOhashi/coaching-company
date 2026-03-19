@@ -54,6 +54,27 @@ The current implementation direction is:
 
 The repository stores the design and implementation source of this system, but is not itself deployed directly to Airia as a whole.
 
+## Runtime Integration
+
+The runtime connection between the product and Airia is intentionally split across three layers:
+
+1. `Frontend`
+   the learner-facing coaching product deployed separately
+2. `common-ai-api`
+   the main backend that receives product requests, builds review payloads, and handles private logic
+3. `Airia`
+   the company-side operations layer that returns structured review decisions
+
+In practice, the flow is:
+
+- learner uses the frontend coaching product
+- frontend calls `common-ai-api`
+- `common-ai-api` handles routine product logic and, when company review is needed, sends a review case to the Airia agent
+- Airia returns a structured company decision such as `keep_current_plan`, `reduce_load`, `increase_load`, `switch_subject`, or `human_review`
+- `common-ai-api` returns that result back to the product and company-side view
+
+This means the repository explains and implements the product layer, while Airia runs the company-side decision workflow that the backend calls at runtime.
+
 ## Airia Agent
 
 Company-side operations agent on Airia:
