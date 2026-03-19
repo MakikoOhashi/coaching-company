@@ -8,77 +8,96 @@
   </head>
   <body>
     <main class="page-shell page-shell--slide">
-      <section class="slide-card company-view">
+      <section class="slide-card company-view company-view--ops">
         <p class="eyebrow">Behind the scenes</p>
         <h1 id="companyViewTitle" class="slide-title"></h1>
         <p id="companyViewIntro" class="company-view__intro"></p>
 
         <div id="companyStatus" class="status-message">読み込み中です...</div>
 
-        <section class="company-panel company-panel--wide" id="companyOrg" hidden>
-          <h2 id="companyOrgTitle" class="company-panel__title"></h2>
-          <div class="company-org-grid">
-            <article class="company-org-card">
-              <p id="companyRoleCeo" class="company-org-card__role"></p>
-              <p id="companyRoleCeoBody" class="company-org-card__body"></p>
-            </article>
-            <article class="company-org-card">
-              <p id="companyRoleCoachA" class="company-org-card__role"></p>
-              <p id="companyRoleCoachABody" class="company-org-card__body"></p>
-            </article>
-            <article class="company-org-card">
-              <p id="companyRoleCoachB" class="company-org-card__role"></p>
-              <p id="companyRoleCoachBBody" class="company-org-card__body"></p>
-            </article>
-            <article class="company-org-card">
-              <p id="companyRoleQueue" class="company-org-card__role"></p>
-              <p id="companyRoleQueueBody" class="company-org-card__body"></p>
-            </article>
-            <article class="company-org-card company-org-card--summary">
-              <p id="companyRoleSummary" class="company-org-card__role"></p>
-              <p id="companyRoleSummaryBody" class="company-org-card__body"></p>
-            </article>
-          </div>
-        </section>
-
-        <div class="company-view__grid" id="companyGrid" hidden>
-          <section class="company-panel">
-            <h2 id="companySnapshotTitle" class="company-panel__title"></h2>
-            <dl class="company-panel__list">
-              <div class="company-panel__row">
-                <dt id="companyThemeLabel"></dt>
-                <dd id="companyThemeValue"></dd>
-              </div>
-              <div class="company-panel__row">
-                <dt id="companyMilestoneLabel"></dt>
-                <dd id="companyMilestoneValue"></dd>
-              </div>
-              <div class="company-panel__row">
-                <dt id="companyRiskLabel"></dt>
-                <dd id="companyRiskValue"></dd>
-              </div>
-              <div class="company-panel__row">
-                <dt id="companyPassLabel"></dt>
-                <dd id="companyPassValue"></dd>
-              </div>
-            </dl>
+        <div id="companyOps" class="company-ops" hidden>
+          <section class="company-panel company-panel--wide">
+            <h2 id="companyMissionTitle" class="company-panel__title"></h2>
+            <div class="company-mission">
+              <article class="company-metric">
+                <p class="company-metric__label" id="companyThemeLabel"></p>
+                <p class="company-metric__value" id="companyThemeValue"></p>
+              </article>
+              <article class="company-metric">
+                <p class="company-metric__label" id="companyMissionModeLabel"></p>
+                <p class="company-metric__value" id="companyMissionModeValue"></p>
+              </article>
+              <article class="company-metric">
+                <p class="company-metric__label" id="companyMissionReviewLabel"></p>
+                <p class="company-metric__value" id="companyMissionReviewValue"></p>
+              </article>
+              <article class="company-metric">
+                <p class="company-metric__label" id="companyMissionCaseLabel"></p>
+                <p class="company-metric__value" id="companyMissionCaseValue"></p>
+              </article>
+            </div>
           </section>
 
-          <section class="company-panel">
-            <h2 id="companyViewTitleDecision" class="company-panel__title"></h2>
+          <div class="company-ops__grid">
+            <section class="company-panel">
+              <h2 id="companyFeedTitle" class="company-panel__title"></h2>
+              <div id="companyFeed" class="company-feed"></div>
+            </section>
+
+            <section class="company-panel">
+              <h2 id="companyDecisionBreakdownTitle" class="company-panel__title"></h2>
+              <div class="company-breakdown">
+                <div class="company-bar">
+                  <div class="company-bar__header">
+                    <span id="companyRiskBarLabel"></span>
+                    <span id="companyRiskBarValue"></span>
+                  </div>
+                  <div class="company-bar__track">
+                    <div id="companyRiskBarFill" class="company-bar__fill"></div>
+                  </div>
+                </div>
+
+                <div class="company-bar">
+                  <div class="company-bar__header">
+                    <span id="companyPassBarLabel"></span>
+                    <span id="companyPassBarValue"></span>
+                  </div>
+                  <div class="company-bar__track">
+                    <div id="companyPassBarFill" class="company-bar__fill company-bar__fill--pass"></div>
+                  </div>
+                </div>
+
+                <div class="company-bar">
+                  <div class="company-bar__header">
+                    <span id="companyLoadBarLabel"></span>
+                    <span id="companyLoadBarValue"></span>
+                  </div>
+                  <div class="company-bar__track">
+                    <div id="companyLoadBarFill" class="company-bar__fill company-bar__fill--load"></div>
+                  </div>
+                </div>
+
+                <dl class="company-panel__list">
+                  <div class="company-panel__row">
+                    <dt id="companyDecisionLabel"></dt>
+                    <dd id="companyDecisionValue"></dd>
+                  </div>
+                  <div class="company-panel__row">
+                    <dt id="companyReasonLabel"></dt>
+                    <dd id="companyReasonValue"></dd>
+                  </div>
+                  <div class="company-panel__row">
+                    <dt id="companyConclusionLabel"></dt>
+                    <dd id="companyConclusionValue"></dd>
+                  </div>
+                </dl>
+              </div>
+            </section>
+          </div>
+
+          <section class="company-panel company-panel--wide">
+            <h2 id="companyNextMoveTitle" class="company-panel__title"></h2>
             <dl class="company-panel__list">
-              <div class="company-panel__row">
-                <dt id="companyReviewTypeLabel"></dt>
-                <dd id="companyReviewTypeValue"></dd>
-              </div>
-              <div class="company-panel__row">
-                <dt id="companyDecisionLabel"></dt>
-                <dd id="companyDecisionValue"></dd>
-              </div>
-              <div class="company-panel__row">
-                <dt id="companyReasonLabel"></dt>
-                <dd id="companyReasonValue"></dd>
-              </div>
               <div class="company-panel__row">
                 <dt id="companyNextActionLabel"></dt>
                 <dd id="companyNextActionValue"></dd>
@@ -111,72 +130,112 @@
       document.documentElement.lang = new URLSearchParams(window.location.search).get("lang") || "ja";
 
       const statusEl = document.getElementById("companyStatus");
-      const gridEl = document.getElementById("companyGrid");
-      const orgEl = document.getElementById("companyOrg");
+      const opsEl = document.getElementById("companyOps");
 
       document.getElementById("companyViewTitle").textContent = t("companyViewTitle");
       document.getElementById("companyViewIntro").textContent = t("companyViewIntro");
-      document.getElementById("companyOrgTitle").textContent = t("companyOrgTitle");
-      document.getElementById("companySnapshotTitle").textContent = t("companySnapshot");
-      document.getElementById("companyViewTitleDecision").textContent = t("companyDecision");
+      document.getElementById("companyMissionTitle").textContent = t("companyMissionTitle");
+      document.getElementById("companyFeedTitle").textContent = t("companyFeedTitle");
+      document.getElementById("companyDecisionBreakdownTitle").textContent = t("companyDecisionBreakdownTitle");
+      document.getElementById("companyNextMoveTitle").textContent = t("companyNextMoveTitle");
+
       document.getElementById("companyThemeLabel").textContent = t("currentTheme");
-      document.getElementById("companyMilestoneLabel").textContent = t("currentMilestoneLabel");
-      document.getElementById("companyRiskLabel").textContent = t("currentRisk");
-      document.getElementById("companyPassLabel").textContent = t("passChance");
-      document.getElementById("companyReviewTypeLabel").textContent = t("companyReviewType");
+      document.getElementById("companyMissionModeLabel").textContent = t("companyMissionMode");
+      document.getElementById("companyMissionReviewLabel").textContent = t("companyMissionReview");
+      document.getElementById("companyMissionCaseLabel").textContent = t("companyMissionCase");
+
+      document.getElementById("companyRiskBarLabel").textContent = t("companyRiskBar");
+      document.getElementById("companyPassBarLabel").textContent = t("companyPassBar");
+      document.getElementById("companyLoadBarLabel").textContent = t("companyLoadBar");
       document.getElementById("companyDecisionLabel").textContent = t("companyDecision");
       document.getElementById("companyReasonLabel").textContent = t("companyReason");
+      document.getElementById("companyConclusionLabel").textContent = t("companyConclusion");
       document.getElementById("companyNextActionLabel").textContent = t("companyNextAction");
       document.getElementById("companyNeedsReviewLabel").textContent = t("companyNeedsReview");
+
       document.getElementById("companyRefresh").textContent = t("companyRefresh");
       document.getElementById("companyBack").textContent = t("companyBack");
       document.getElementById("companyBack").href = withLang("./start.html");
-      document.getElementById("companyRoleCeo").textContent = t("companyRoleCeo");
-      document.getElementById("companyRoleCoachA").textContent = t("companyRoleCoachA");
-      document.getElementById("companyRoleCoachB").textContent = t("companyRoleCoachB");
-      document.getElementById("companyRoleQueue").textContent = t("companyRoleQueue");
-      document.getElementById("companyRoleSummary").textContent = t("companyRoleSummary");
-      document.getElementById("companyRoleCeoBody").textContent = t("companyOrgCeoBody");
-      document.getElementById("companyRoleCoachABody").textContent = t("companyOrgCoachABody");
-      document.getElementById("companyRoleCoachBBody").textContent = t("companyOrgCoachBBody");
-      document.getElementById("companyRoleQueueBody").textContent = t("companyOrgQueueBody");
 
       function formatDecision(value) {
         if (!value) return "—";
         return String(value).replaceAll("_", " ");
       }
 
-      function renderView(studentState, companyReview) {
-        document.getElementById("companyThemeValue").textContent = studentState.currentSubject || "—";
-        document.getElementById("companyMilestoneValue").textContent = studentState.currentMilestone || "—";
-        document.getElementById("companyRiskValue").textContent = studentState.riskLevel || "—";
-        document.getElementById("companyPassValue").textContent =
-          studentState.passProbability != null ? `${studentState.passProbability}%` : "—";
+      function riskPercent(riskLevel) {
+        if (riskLevel === "high") return 84;
+        if (riskLevel === "medium") return 56;
+        return 28;
+      }
 
-        document.getElementById("companyReviewTypeValue").textContent = formatDecision(companyReview.review_type);
+      function loadPercent(questionCount) {
+        if (!questionCount) return 25;
+        return Math.min(100, Math.max(20, questionCount * 22));
+      }
+
+      function feedEntries(studentState, companyReview, dailyQuota) {
+        return [
+          { time: "09:02", actor: t("companyFeedQueue"), body: `${formatDecision(companyReview.review_type)} triggered` },
+          { time: "09:03", actor: t("companyFeedSystem"), body: `${t("companyRiskBar")}: ${studentState.riskLevel || t("companyRiskMedium")} / ${t("companyPassBar")}: ${studentState.passProbability}%` },
+          { time: "09:04", actor: t("companyFeedCeo"), body: `${formatDecision(companyReview.decision)} issued` },
+          { time: "09:05", actor: t("companyFeedCoach"), body: `${studentState.currentSubject} / ${dailyQuota?.questionCount || 2}Q session executing` },
+        ];
+      }
+
+      function renderFeed(entries) {
+        const feedEl = document.getElementById("companyFeed");
+        feedEl.innerHTML = entries
+          .map(
+            (entry) => `
+              <article class="company-feed__item">
+                <p class="company-feed__time">${entry.time}</p>
+                <div class="company-feed__content">
+                  <p class="company-feed__actor">${entry.actor}</p>
+                  <p class="company-feed__body">${entry.body}</p>
+                </div>
+              </article>
+            `,
+          )
+          .join("");
+      }
+
+      function renderView(studentState, companyReview, dailyQuota) {
+        document.getElementById("companyThemeValue").textContent = studentState.currentSubject || "—";
+        document.getElementById("companyMissionModeValue").textContent = dailyQuota?.sessionMode || "—";
+        document.getElementById("companyMissionReviewValue").textContent = formatDecision(companyReview.review_type);
+        document.getElementById("companyMissionCaseValue").textContent = studentState.currentMilestone || "—";
+
+        document.getElementById("companyRiskBarValue").textContent = studentState.riskLevel || "—";
+        document.getElementById("companyRiskBarFill").style.width = `${riskPercent(studentState.riskLevel)}%`;
+        document.getElementById("companyPassBarValue").textContent =
+          studentState.passProbability != null ? `${studentState.passProbability}%` : "—";
+        document.getElementById("companyPassBarFill").style.width = `${studentState.passProbability || 0}%`;
+        document.getElementById("companyLoadBarValue").textContent = `${dailyQuota?.questionCount || 0}Q`;
+        document.getElementById("companyLoadBarFill").style.width = `${loadPercent(dailyQuota?.questionCount)}%`;
+
         document.getElementById("companyDecisionValue").textContent = formatDecision(companyReview.decision);
         document.getElementById("companyReasonValue").textContent = companyReview.decision_reason || "—";
+        document.getElementById("companyConclusionValue").textContent =
+          `${formatDecision(companyReview.decision)} / ${formatDecision(companyReview.review_type)}`;
         document.getElementById("companyNextActionValue").textContent = companyReview.updated_next_action || "—";
         document.getElementById("companyNeedsReviewValue").textContent = companyReview.review_needed ? t("companyYes") : t("companyNo");
-        document.getElementById("companyRoleSummaryBody").textContent =
-          `${studentState.currentSubject} / ${formatDecision(companyReview.review_type)} / ${formatDecision(companyReview.decision)}`;
+
+        renderFeed(feedEntries(studentState, companyReview, dailyQuota));
 
         statusEl.hidden = true;
-        orgEl.hidden = false;
-        gridEl.hidden = false;
+        opsEl.hidden = false;
       }
 
       async function refreshView() {
         statusEl.hidden = false;
-        orgEl.hidden = true;
-        gridEl.hidden = true;
+        opsEl.hidden = true;
         statusEl.dataset.state = "";
         statusEl.textContent = t("loading");
 
         try {
           const { studentState, signals, dailyQuota } = await loadStudentState();
           const companyReview = await loadCompanyReview(studentState, signals, dailyQuota);
-          renderView(studentState, companyReview);
+          renderView(studentState, companyReview, dailyQuota);
         } catch (error) {
           statusEl.hidden = false;
           statusEl.dataset.state = "error";
