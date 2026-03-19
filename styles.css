@@ -30,6 +30,12 @@ body {
   font-family: Georgia, "Times New Roman", serif;
 }
 
+body.body--company {
+  background:
+    radial-gradient(circle at top, rgba(252, 253, 255, 0.96), transparent 42%),
+    linear-gradient(180deg, #ffffff 0%, #fbfcfd 62%, #f5f7fa 100%);
+}
+
 .page-shell {
   width: min(1120px, calc(100% - 32px));
   margin: 0 auto;
